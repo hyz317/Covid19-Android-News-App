@@ -1,6 +1,7 @@
 package com.java.heyuze.Activity;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.webkit.HttpAuthHandler;
 import android.widget.Button;
@@ -15,6 +16,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.java.heyuze.*;
+
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -33,9 +36,38 @@ public class MainActivity extends AppCompatActivity
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        HTTPHandler httpHandler = new HTTPHandler();
-        Thread httpThread = new Thread(httpHandler);
-        httpThread.start();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        String fileDir = getApplicationContext().getFilesDir().getPath() + "/";
+        BackgroundHandler backgroundHandler = new BackgroundHandler(fileDir);
+        Thread backgroundThread = new Thread(backgroundHandler);
+        backgroundThread.start();
+        try
+        {
+            while (!InfoManager.getInstance().hasNewsData())
+            {
+                System.out.println("Please Wait!");
+            }
+            NewsContent test = InfoManager.getInstance().getNewsContent("5e8d92fa7ac1f2cf57f7bc75");
+            System.out.println(test.content);
+            System.out.println(test.date);
+            System.out.println(test.labels.get(0));
+            System.out.println(test.words.get(0));
+            Vector<knowledgeData> test2 = InfoManager.getInstance().getKnowledge("病毒");
+            System.out.println(test2.get(0).description);
+            System.out.println(test2.get(0).url);
+            System.out.println(test2.get(0).hot);
+            System.out.println(test2.get(0).imgUrl);
+            System.out.println(test2.get(0).label);
+            System.out.println(test2.get(0).properties.get("鉴别诊断"));
+            System.out.println(test2.get(0).forwardRelations.get("无症状感染者"));
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
 }
