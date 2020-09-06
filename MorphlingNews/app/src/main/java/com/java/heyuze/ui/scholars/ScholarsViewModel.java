@@ -1,14 +1,14 @@
-package com.java.heyuze.ui.notifications;
+package com.java.heyuze.ui.scholars;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class ScholarsViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public NotificationsViewModel() {
+    public ScholarsViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is notifications fragment");
     }
