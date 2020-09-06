@@ -132,7 +132,7 @@ public class InfoManager
             @Override
             public int compare(NewsData a, NewsData b)
             {
-                return a.time.compareTo(b.time);
+                return b.time.compareTo(a.time);
             }
         });
         return res;
