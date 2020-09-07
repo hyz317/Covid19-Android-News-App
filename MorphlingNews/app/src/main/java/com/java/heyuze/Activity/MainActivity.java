@@ -9,7 +9,11 @@ import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.java.heyuze.R;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity
         BackgroundHandler backgroundHandler = new BackgroundHandler(fileDir);
         Thread backgroundThread = new Thread(backgroundHandler);
         backgroundThread.start();
+
+        /*
         try
         {
             while (!InfoManager.getInstance().hasNewsData())
@@ -67,6 +73,11 @@ public class MainActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+        */
+
+
+        // FragmentManager fragmentManager = getSupportFragmentManager();
+        // Fragment newsFragment = fragmentManager.findFragmentById(R.id.navigation_news);
 
     }
 
