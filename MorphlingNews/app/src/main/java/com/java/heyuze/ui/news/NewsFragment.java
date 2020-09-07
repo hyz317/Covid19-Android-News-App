@@ -3,6 +3,7 @@ package com.java.heyuze.ui.news;
 import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -33,19 +35,49 @@ public class NewsFragment extends Fragment {
     private List<String> lookingCategories;
     private List<String> unlookingCategories;
 
-    private void updateLooking(Button b, GridLayout looking, GridLayout unlooking) {
+    private void updateLooking(final Button b, final GridLayout looking, final GridLayout unlooking) {
+        System.out.println("looking: " + lookingCategories);
+        System.out.println("unlooking: " + unlookingCategories);
         if (lookingCategories.contains((String) b.getText())) {
+            System.out.println("!!! is in looking");
             lookingCategories.remove((String) b.getText());
             unlookingCategories.add((String) b.getText());
             looking.removeView(b);
-            unlooking.addView(b);
+            LayoutTransition tr = looking.getLayoutTransition();
+            tr.addTransitionListener(new LayoutTransition.TransitionListener() {
+                @Override
+                public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
+
+                }
+
+                @Override
+                public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
+                    if (b.getParent() == null) {
+                        b.setText(('+' + (String) b.getText()));
+                        unlooking.addView(b);
+                    }
+                }
+            });
         } else {
             unlookingCategories.remove((String) b.getText());
             lookingCategories.add((String) b.getText());
             unlooking.removeView(b);
-            looking.addView(b);
-        }
+            LayoutTransition utr = unlooking.getLayoutTransition();
+            utr.addTransitionListener(new LayoutTransition.TransitionListener() {
+                @Override
+                public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
 
+                }
+
+                @Override
+                public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
+                    if (b.getParent() == null) {
+                        b.setText(((String) b.getText()).substring(1));
+                        looking.addView(b);
+                    }
+                }
+            });
+        }
     }
 
     private void updateShowLooking(TabLayout tabLayout) {
@@ -56,7 +88,7 @@ public class NewsFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
         newsViewModel =
                 ViewModelProviders.of(this).get(NewsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_news, container, false);
@@ -71,20 +103,22 @@ public class NewsFragment extends Fragment {
 
         lookingCategories = new ArrayList<String>() {{ add("类别1"); add("类别2"); add("类别3");
                                                      add("类别4"); add("类别5"); add("类别6"); }};
-        unlookingCategories = new ArrayList<String>()  {{ add("xllend3"); add("royxroc");
-                                                          add("pchxiao"); add("hyz317"); }};
+        unlookingCategories = new ArrayList<String>()  {{ add("+xllend3"); add("+royxroc");
+                                                          add("+pchxiao"); add("+hyz317"); }};
         final TabLayout tabLayout = root.findViewById(R.id.tab);
         for (String category : lookingCategories) {
             tabLayout.addTab(tabLayout.newTab().setText(category));
         }
 
+        final View dialogView = View.inflate(getActivity(), R.layout.dialog_category, null);
+        final GridLayout looking = dialogView.findViewById(R.id.lookingCategoriesLayout);
+        final GridLayout unlooking = dialogView.findViewById(R.id.unlookingCategoriesLayout);
+
         Button adjustCategoryBtn = root.findViewById(R.id.category);
         adjustCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View dialogView = View.inflate(getActivity(), R.layout.dialog_category, null);
-                final GridLayout looking = dialogView.findViewById(R.id.lookingCategoriesLayout);
-                final GridLayout unlooking = dialogView.findViewById(R.id.unlookingCategoriesLayout);
+
                 //looking.setLayoutTransition(new LayoutTransition());
                 //unlooking.setLayoutTransition(new LayoutTransition());
                 for (String s : lookingCategories) {
