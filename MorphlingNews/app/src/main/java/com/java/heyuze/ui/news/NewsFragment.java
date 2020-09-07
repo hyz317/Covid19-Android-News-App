@@ -41,7 +41,7 @@ public class NewsFragment extends Fragment {
         if (lookingCategories.contains((String) b.getText())) {
             System.out.println("!!! is in looking");
             lookingCategories.remove((String) b.getText());
-            unlookingCategories.add((String) b.getText());
+            unlookingCategories.add('+' + (String) b.getText());
             looking.removeView(b);
             LayoutTransition tr = looking.getLayoutTransition();
             tr.addTransitionListener(new LayoutTransition.TransitionListener() {
@@ -60,7 +60,7 @@ public class NewsFragment extends Fragment {
             });
         } else {
             unlookingCategories.remove((String) b.getText());
-            lookingCategories.add((String) b.getText());
+            lookingCategories.add(((String) b.getText()).substring(1));
             unlooking.removeView(b);
             LayoutTransition utr = unlooking.getLayoutTransition();
             utr.addTransitionListener(new LayoutTransition.TransitionListener() {
@@ -113,50 +113,46 @@ public class NewsFragment extends Fragment {
         final View dialogView = View.inflate(getActivity(), R.layout.dialog_category, null);
         final GridLayout looking = dialogView.findViewById(R.id.lookingCategoriesLayout);
         final GridLayout unlooking = dialogView.findViewById(R.id.unlookingCategoriesLayout);
+        for (String s : lookingCategories) {
+            Button btn = new Button(getActivity());
+            btn.setText(s);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Button b = (Button) view;
+                    updateLooking(b, looking, unlooking);
+                    updateShowLooking(tabLayout);
+                }
+            });
+            looking.addView(btn);
+        }
+        for (String s : unlookingCategories) {
+            Button btn = new Button(getActivity());
+            btn.setText(s);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Button b = (Button) view;
+                    updateLooking(b, looking, unlooking);
+                    updateShowLooking(tabLayout);
+                }
+            });
+            unlooking.addView(btn);
+        }
+        final AlertDialog alertDialog2 = new AlertDialog.Builder(getActivity())
+                .setView(dialogView)
+                .setMessage("新闻类别选择")
+                .setNegativeButton("完成", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        // TODO Auto-generated method stub
+                    }
+                }).create();
 
         Button adjustCategoryBtn = root.findViewById(R.id.category);
         adjustCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //looking.setLayoutTransition(new LayoutTransition());
-                //unlooking.setLayoutTransition(new LayoutTransition());
-                for (String s : lookingCategories) {
-                    Button btn = new Button(getActivity());
-                    btn.setText(s);
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Button b = (Button) view;
-                            updateLooking(b, looking, unlooking);
-                            updateShowLooking(tabLayout);
-                        }
-                    });
-                    looking.addView(btn);
-                }
-                for (String s : unlookingCategories) {
-                    Button btn = new Button(getActivity());
-                    btn.setText(s);
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Button b = (Button) view;
-                            updateLooking(b, looking, unlooking);
-                            updateShowLooking(tabLayout);
-                        }
-                    });
-                    unlooking.addView(btn);
-                }
-
-                AlertDialog alertDialog2 = new AlertDialog.Builder(getActivity())
-                        .setView(dialogView)
-                        .setMessage("新闻类别选择")
-                        .setNegativeButton("完成", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                // TODO Auto-generated method stub
-                            }
-                        }).show();
                 alertDialog2.show();
             }
         });
