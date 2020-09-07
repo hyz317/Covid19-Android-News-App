@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingRight="16dp"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="我的类别"
+        android:layout_marginLeft="24dp"/>
+
+    <GridLayout
+        android:id="@+id/lookingCategoriesLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:animateLayoutChanges="true"
+        android:columnCount="3">
+    </GridLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="隐藏的类别"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="24dp"/>
+
+    <GridLayout
+        android:id="@+id/unlookingCategoriesLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:animateLayoutChanges="true"
+        android:columnCount="3">
+    </GridLayout>
+
+
+</LinearLayout>
