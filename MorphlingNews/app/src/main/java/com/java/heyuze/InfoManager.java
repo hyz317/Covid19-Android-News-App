@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.Collections;
 
 import com.alibaba.fastjson.*;
+import com.huaban.analysis.jieba.*;
 
 // InfoManager类public接口列表
 ///////////////////////////////////////
@@ -55,7 +56,6 @@ public class InfoManager
     private Vector<NewsData> newsData = null;
 
     private Vector<String> keywordHistory = new Vector<>();
-    private LinkedHashMap<String, NewsData> keywordDictionary = new LinkedHashMap<>();
 
     private InfoManager()
     {
@@ -71,10 +71,14 @@ public class InfoManager
 
     public boolean hasNewsData() { return newsData != null; }
 
-    public void loadJSON(InfoType type, String path) throws IOException
+    public void loadJSON(InfoType type, String path) throws Exception
     {
         File file = new File(path);
-        if (!file.exists()) return;
+        if (!file.exists())
+        {
+            System.out.println("Cannot load local JSON!");
+            return;
+        }
         FileInputStream fileInputStream = new FileInputStream(path);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -89,23 +93,30 @@ public class InfoManager
         switch (type)
         {
             case INFECTDATA:
-                infectJSON= JSON.parseObject(stringBuffer.toString());
+                infectJSON = JSON.parseObject(stringBuffer.toString());
                 break;
             case NEWSDATA:
-                newsJSON = JSON.parseObject(stringBuffer.toString());
+                newsJSON  = JSON.parseObject(stringBuffer.toString());
                 break;
             default:
         }
+        loadData(type);
+        System.out.println("Load local JSON Success!");
+        System.out.println("JSON Content: " + stringBuffer.toString());
     }
 
     public void saveJSON(String path, String buf) throws IOException
     {
         File file = new File(path);
         if (!file.exists()) file.createNewFile();
+        System.out.println("Create Success");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "UTF-8"));
         writer.write(buf);
         writer.flush();
         writer.close();
+        File newFile = new File(path);
+        if (newFile.exists())
+            System.out.println("Write Success");
     }
 
     private String getJSON(String urlString) throws Exception
@@ -132,16 +143,12 @@ public class InfoManager
         }
         return null;
     }
-
-    public synchronized String updateCovidData(InfoType type) throws Exception
+  
+    private synchronized void loadData(InfoType type) throws Exception
     {
-        String jsonString;
         switch (type)
         {
             case INFECTDATA:
-                jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/epidemic.json");
-                if (jsonString == null) return null;
-                infectJSON = JSONObject.parseObject(jsonString);
                 infectData = new Vector<>();
                 for (String key : infectJSON.keySet())
                 {
@@ -162,19 +169,18 @@ public class InfoManager
                     }
                     infectData.add(data);
                 }
-                return jsonString;
+                break;
             case NEWSDATA:
-                jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/events.json");
-                if (jsonString == null) return null;
-                newsJSON  = JSONObject.parseObject(jsonString);
                 newsData = new Vector<>();
                 JSONArray contents = newsJSON.getJSONArray("datas");
                 for (int i = 0; i < contents.size(); ++i)
                 {
                     JSONObject content = contents.getJSONObject(i);
                     NewsData data = new NewsData();
-                    if (content.getString("type").equals("paper")) data.type = NewsData.NewsType.PAPER;
-                    else if (content.getString("type").equals("news")) data.type = NewsData.NewsType.NEWS;
+                    if (content.getString("type").equals("paper"))
+                        data.type = NewsData.NewsType.PAPER;
+                    else if (content.getString("type").equals("news"))
+                        data.type = NewsData.NewsType.NEWS;
                     else data.type = NewsData.NewsType.EVENT;
                     data.id = content.getString("_id");
                     data.time = content.getString("time");
@@ -189,6 +195,31 @@ public class InfoManager
                         return b.time.compareTo(a.time);
                     }
                 });
+                break;
+        }
+    }
+
+
+    public synchronized String updateCovidData(InfoType type) throws Exception
+    {
+        String jsonString;
+        switch (type)
+        {
+            case INFECTDATA:
+                jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/epidemic.json");
+                if (jsonString != null)
+                {
+                    infectJSON = JSONObject.parseObject(jsonString);
+                    loadData(type);
+                }
+                return jsonString;
+            case NEWSDATA:
+                jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/events.json");
+                if (jsonString != null)
+                {
+                    newsJSON = JSONObject.parseObject(jsonString);
+                    loadData(type);
+                }
                 return jsonString;
             default:
         }
