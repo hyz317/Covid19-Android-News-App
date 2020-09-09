@@ -133,7 +133,7 @@ public class InfoManager
         return null;
     }
 
-    public String updateCovidData(InfoType type) throws Exception
+    public synchronized String updateCovidData(InfoType type) throws Exception
     {
         String jsonString;
         switch (type)
@@ -200,7 +200,7 @@ public class InfoManager
         return infectData;
     }
 
-    public Vector<NewsData> getNewsData(NewsData.NewsType type)
+    public synchronized Vector<NewsData> getNewsData(NewsData.NewsType type)
     {
         Vector<NewsData> res = new Vector<>();
         for (NewsData entry: newsData)
