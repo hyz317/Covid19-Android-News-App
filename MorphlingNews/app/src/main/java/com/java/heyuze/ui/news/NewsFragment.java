@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,9 @@ import com.java.heyuze.NewsListHandler;
 import com.java.heyuze.R;
 import com.google.android.material.tabs.TabLayout;
 import com.java.heyuze.knowledgeData;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.w3c.dom.Text;
 
@@ -48,10 +53,36 @@ public class NewsFragment extends Fragment {
     private List<String> lookingCategories;
     private List<String> unlookingCategories;
     private ListView listView;
+    private NewsData.NewsType nowNewsType = NewsData.NewsType.NEWS;
+    private RefreshLayout mRefreshLayout;
+    private Vector<NewsData> newsData;
+    private NewsAdapter adapter;
+    private int newsCount = 0;
 
-    private void updateNews(NewsData.NewsType type) {
-        final Vector<NewsData> data = InfoManager.getInstance().getNewsData(type);
-        NewsAdapter adapter = new NewsAdapter(getActivity(), data);
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1: // refresh
+                    mRefreshLayout.finishRefresh(true);
+                    break;
+                case 2: // load more
+                    List<String> mLoadMoreDatas = (List<String>) msg.obj;
+                    mRefreshLayout.finishLoadMore(true);
+                    break;
+            }
+            return false;
+        }
+    });
+
+    public void updateNews(NewsData.NewsType type) {
+        newsData = InfoManager.getInstance().getNewsData(type);
+        final Vector<NewsData> data = new Vector<>();
+        for (int i = 0; i < 6; i++) {
+            data.add(newsData.get(i));
+        }
+        newsCount = 6;
+        adapter = new NewsAdapter(getActivity(), data);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,6 +100,15 @@ public class NewsFragment extends Fragment {
                 getActivity().startActivity(intent);
             }
         });
+    }
+
+    private void loadMoreNews() {
+        Vector<NewsData> data = new Vector<>();
+        for (int i = newsCount; i < newsCount + 6; i++) {
+            data.add(newsData.get(i));
+        }
+        newsCount += 6;
+        adapter.addData(data);
     }
 
     private void updateLooking(final Button b, final GridLayout looking, final GridLayout unlooking) {
@@ -125,6 +165,10 @@ public class NewsFragment extends Fragment {
         }
     }
 
+    public void setAdapter(NewsAdapter adapter) {
+        this.adapter = adapter;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         newsViewModel =
@@ -153,12 +197,15 @@ public class NewsFragment extends Fragment {
                 String category = (String) tab.getTag();
                 switch (category) {
                     case "News":
+                        nowNewsType = NewsData.NewsType.NEWS;
                         updateNews(NewsData.NewsType.NEWS);
                         break;
                     case "Papers":
+                        nowNewsType = NewsData.NewsType.PAPER;
                         updateNews(NewsData.NewsType.PAPER);
                         break;
                     case "Event":
+                        nowNewsType = NewsData.NewsType.EVENT;
                         updateNews(NewsData.NewsType.EVENT);
                         break;
                 }
@@ -227,6 +274,32 @@ public class NewsFragment extends Fragment {
         NewsListHandler newsListHandler = new NewsListHandler(listView, this);
         Thread newsListThread = new Thread(newsListHandler);
         newsListThread.start();
+
+        mRefreshLayout = root.findViewById(R.id.refreshLayout);
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                Message message = new Message();
+                message.what = 1;
+                try {
+                    InfoManager.getInstance().updateCovidData(InfoManager.InfoType.NEWSDATA);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                updateNews(nowNewsType);
+                mHandler.sendMessage(message);
+            }
+        });
+        mRefreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                Message message = new Message();
+                message.what = 2;
+                loadMoreNews();
+                System.out.println("load more News finished. " + adapter.getCount());
+                mHandler.sendMessageDelayed(message,1000);
+            }
+        });
 
         return root;
     }

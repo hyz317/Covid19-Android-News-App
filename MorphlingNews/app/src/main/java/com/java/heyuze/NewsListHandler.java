@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 
 import com.java.heyuze.Activity.NewsActivity;
 import com.java.heyuze.Adapter.NewsAdapter;
+import com.java.heyuze.ui.news.NewsFragment;
 
 import java.util.Vector;
 
@@ -42,25 +43,7 @@ public class NewsListHandler implements Runnable {
             fragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    final Vector<NewsData> data = InfoManager.getInstance().getNewsData(NewsData.NewsType.NEWS);
-                    adapter = new NewsAdapter(fragment.getActivity(), data);
-                    listView.setAdapter(adapter);
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                                                long arg3) {
-                            Intent intent = new Intent(fragment.getActivity(), NewsActivity.class);
-                            try {
-                                NewsContent ctn = InfoManager.getInstance().getNewsContent(data.get(position).id);
-                                intent.putExtra("title", data.get(position).title);
-                                intent.putExtra("date", data.get(position).time);
-                                intent.putExtra("content", ctn.content);
-                            } catch (Exception e) {
-                                System.out.println("EXCEPTION GET NEWS CONTENT?");
-                            }
-                            fragment.getActivity().startActivity(intent);
-                        }
-                    });
+                    ((NewsFragment) fragment).updateNews(NewsData.NewsType.NEWS);
                 }
             });
         }
