@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -46,6 +47,29 @@ public class NewsFragment extends Fragment {
     private NewsViewModel newsViewModel;
     private List<String> lookingCategories;
     private List<String> unlookingCategories;
+    private ListView listView;
+
+    private void updateNews(NewsData.NewsType type) {
+        final Vector<NewsData> data = InfoManager.getInstance().getNewsData(type);
+        NewsAdapter adapter = new NewsAdapter(getActivity(), data);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                Intent intent = new Intent(getActivity(), NewsActivity.class);
+                try {
+                    NewsContent ctn = InfoManager.getInstance().getNewsContent(data.get(position).id);
+                    intent.putExtra("title", data.get(position).title);
+                    intent.putExtra("date", data.get(position).time);
+                    intent.putExtra("content", ctn.content);
+                } catch (Exception e) {
+                    System.out.println("EXCEPTION GET NEWS CONTENT?");
+                }
+                getActivity().startActivity(intent);
+            }
+        });
+    }
 
     private void updateLooking(final Button b, final GridLayout looking, final GridLayout unlooking) {
         System.out.println("looking: " + lookingCategories);
@@ -95,7 +119,9 @@ public class NewsFragment extends Fragment {
     private void updateShowLooking(TabLayout tabLayout) {
         tabLayout.removeAllTabs();
         for (String category : lookingCategories) {
-            tabLayout.addTab(tabLayout.newTab().setText(category));
+            TabLayout.Tab tab = tabLayout.newTab().setText(category);
+            tab.setTag(category);
+            tabLayout.addTab(tab);
         }
     }
 
@@ -115,14 +141,40 @@ public class NewsFragment extends Fragment {
         });
         */
 
-        lookingCategories = new ArrayList<String>() {{ add("类别1"); add("类别2"); add("类别3");
-                                                     add("类别4"); add("类别5"); add("类别6"); }};
-        unlookingCategories = new ArrayList<String>()  {{ add("+xllend3"); add("+royxroc");
-                                                          add("+pchxiao"); add("+hyz317"); }};
+        lookingCategories = new ArrayList<String>() {{ add("News"); add("Papers");
+                                                       add("Event"); }};
+        unlookingCategories = new ArrayList<String>()  {{ /*add("+xllend3"); add("+royxroc");
+                                                          add("+pchxiao"); add("+hyz317");*/ }};
         final TabLayout tabLayout = root.findViewById(R.id.tab);
-        for (String category : lookingCategories) {
-            tabLayout.addTab(tabLayout.newTab().setText(category));
-        }
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (!InfoManager.getInstance().hasNewsData()) return;
+                String category = (String) tab.getTag();
+                switch (category) {
+                    case "News":
+                        updateNews(NewsData.NewsType.NEWS);
+                        break;
+                    case "Papers":
+                        updateNews(NewsData.NewsType.PAPER);
+                        break;
+                    case "Event":
+                        updateNews(NewsData.NewsType.EVENT);
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        updateShowLooking(tabLayout);
 
         final View dialogView = View.inflate(getActivity(), R.layout.dialog_category, null);
         final GridLayout looking = dialogView.findViewById(R.id.lookingCategoriesLayout);
@@ -171,11 +223,10 @@ public class NewsFragment extends Fragment {
             }
         });
 
-        ListView listView = root.findViewById(R.id.listView);
+        listView = root.findViewById(R.id.listView);
         NewsListHandler newsListHandler = new NewsListHandler(listView, this);
         Thread newsListThread = new Thread(newsListHandler);
         newsListThread.start();
-        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 
         return root;
     }
