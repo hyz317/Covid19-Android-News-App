@@ -11,14 +11,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.invoke.VolatileCallSite;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.Collections;
 
 import com.alibaba.fastjson.*;
+
+// InfoManager类public接口列表
+///////////////////////////////////////
+/*
+        public static InfoManager getInstance(); // 获得实例
+
+        public boolean hasInfectData(); // 判断疫情信息是否加载完毕
+        public boolean hasNewsData(); // 判断新闻信息是否加载完毕
+
+        public void loadJSON(InfoType type, String path); // 加载被本地JSON文件
+        public void saveJSON(String path, String buf); // 保存本地JSON文件
+        public String updateCovidData(InfoType type); // 通过HTTP更新疫情数据
+
+        public Vector<InfectData> getInfectData(); // 获得加载好的疫情数据
+        public Vector<NewsData> getNewsData(NewsData.NewsType type) // 获得加载好的新闻
+        public Vector<knowledgeData> getKnowledge(String key); // 通过HTTP获得某关键词的知识图谱
+        public NewsContent getNewsContent(String id) // 通过HTTP获得新闻正文
+
+*/
+///////////////////////////////////////
 
 public class InfoManager
 {
@@ -26,8 +48,14 @@ public class InfoManager
     {INFECTDATA, NEWSDATA}
 
     private static InfoManager instance = null;
-    private JSONObject infectData = null;
-    private JSONObject newsData = null;
+    private JSONObject infectJSON= null;
+    private JSONObject newsJSON= null;
+
+    private Vector<InfectData> infectData = null;
+    private Vector<NewsData> newsData = null;
+
+    private Vector<String> keywordHistory = new Vector<>();
+    private LinkedHashMap<String, NewsData> keywordDictionary = new LinkedHashMap<>();
 
     private InfoManager()
     {
@@ -61,10 +89,10 @@ public class InfoManager
         switch (type)
         {
             case INFECTDATA:
-                infectData = JSON.parseObject(stringBuffer.toString());
+                infectJSON= JSON.parseObject(stringBuffer.toString());
                 break;
             case NEWSDATA:
-                newsData = JSON.parseObject(stringBuffer.toString());
+                newsJSON = JSON.parseObject(stringBuffer.toString());
                 break;
             default:
         }
@@ -80,7 +108,7 @@ public class InfoManager
         writer.close();
     }
 
-    public String getJSON(String urlString) throws Exception
+    private String getJSON(String urlString) throws Exception
     {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -112,11 +140,55 @@ public class InfoManager
         {
             case INFECTDATA:
                 jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/epidemic.json");
-                if (jsonString != null) infectData = JSONObject.parseObject(jsonString);
+                if (jsonString == null) return null;
+                infectJSON = JSONObject.parseObject(jsonString);
+                infectData = new Vector<>();
+                for (String key : infectJSON.keySet())
+                {
+                    InfectData data = new InfectData();
+                    String[] stringSet = key.split("\\|");
+                    for (String entry : stringSet)
+                        data.location.add(entry);
+                    JSONObject content = infectJSON.getJSONObject(key);
+                    JSONArray dayInfo = content.getJSONArray("data");
+                    data.beginDate = content.getString("begin");
+                    for (int i = 0; i < dayInfo.size(); ++i)
+                    {
+                        JSONArray detail = dayInfo.getJSONArray(i);
+                        data.confirmed.add(detail.getIntValue(0));
+                        data.suspected.add(detail.getIntValue(1));
+                        data.cured.add(detail.getIntValue(2));
+                        data.dead.add(detail.getIntValue(1));
+                    }
+                    infectData.add(data);
+                }
                 return jsonString;
             case NEWSDATA:
                 jsonString = getJSON("https://covid-dashboard.aminer.cn/api/dist/events.json");
-                if (jsonString != null) newsData  = JSONObject.parseObject(jsonString);
+                if (jsonString == null) return null;
+                newsJSON  = JSONObject.parseObject(jsonString);
+                newsData = new Vector<>();
+                JSONArray contents = newsJSON.getJSONArray("datas");
+                for (int i = 0; i < contents.size(); ++i)
+                {
+                    JSONObject content = contents.getJSONObject(i);
+                    NewsData data = new NewsData();
+                    if (content.getString("type").equals("paper")) data.type = NewsData.NewsType.PAPER;
+                    else if (content.getString("type").equals("news")) data.type = NewsData.NewsType.NEWS;
+                    else data.type = NewsData.NewsType.EVENT;
+                    data.id = content.getString("_id");
+                    data.time = content.getString("time");
+                    data.title = content.getString("title");
+                    newsData.add(data);
+                }
+                Collections.sort(newsData, new Comparator<NewsData>()
+                {
+                    @Override
+                    public int compare(NewsData a, NewsData b)
+                    {
+                        return b.time.compareTo(a.time);
+                    }
+                });
                 return jsonString;
             default:
         }
@@ -125,54 +197,14 @@ public class InfoManager
 
     public Vector<InfectData> getInfectData()
     {
-        if (infectData == null) return null;
-        Vector<InfectData> res = new Vector<>();
-        for (String key : infectData.keySet())
-        {
-            InfectData data = new InfectData();
-            String[] stringSet = key.split("\\|");
-            for (String entry : stringSet)
-                data.location.add(entry);
-            JSONObject content = infectData.getJSONObject(key);
-            JSONArray dayInfo = content.getJSONArray("data");
-            data.beginDate = content.getString("begin");
-            for (int i = 0; i < dayInfo.size(); ++i)
-            {
-                JSONArray detail = dayInfo.getJSONArray(i);
-                data.confirmed.add(detail.getIntValue(0));
-                data.suspected.add(detail.getIntValue(1));
-                data.cured.add(detail.getIntValue(2));
-                data.dead.add(detail.getIntValue(1));
-            }
-            res.add(data);
-        }
-        return res;
+        return infectData;
     }
 
-    public Vector<NewsData> getNewsData()
+    public Vector<NewsData> getNewsData(NewsData.NewsType type)
     {
-        if (newsData == null) return null;
         Vector<NewsData> res = new Vector<>();
-        JSONArray contents = newsData.getJSONArray("datas");
-        for (int i = 0; i < contents.size(); ++i)
-        {
-            JSONObject content = contents.getJSONObject(i);
-            NewsData data = new NewsData();
-            data.id = content.getString("_id");
-            data.time = content.getString("time");
-            data.title = content.getString("title");
-            if (content.getString("type").equals("news")) data.type = NewsData.NewsType.NEWS;
-            else data.type = NewsData.NewsType.PAPER;
-            res.add(data);
-        }
-        Collections.sort(res, new Comparator<NewsData>()
-        {
-            @Override
-            public int compare(NewsData a, NewsData b)
-            {
-                return b.time.compareTo(a.time);
-            }
-        });
+        for (NewsData entry: newsData)
+            if (entry.type == type) res.add(entry);
         return res;
     }
 
@@ -229,12 +261,7 @@ public class InfoManager
         data.date = newsContent.getString("date");
         JSONArray labels = newsContent.getJSONArray("entities");
         for (int i = 0; i < labels.size(); ++i)
-        {
             data.labels.add(labels.getJSONObject(i).getString("label"));
-            String keyWord = newsContent.getString("seg_text");
-            for (String token : keyWord.split(" "))
-                data.words.add(token);
-        }
         return data;
     }
 }

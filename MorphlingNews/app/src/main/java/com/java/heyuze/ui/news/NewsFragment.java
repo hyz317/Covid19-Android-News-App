@@ -180,7 +180,6 @@ public class NewsFragment extends Fragment {
             System.out.println(test.content);
             System.out.println(test.date);
             System.out.println(test.labels.get(0));
-            System.out.println(test.words.get(0));
             Vector<knowledgeData> test2 = InfoManager.getInstance().getKnowledge("病毒");
             System.out.println(test2.get(0).description);
             System.out.println(test2.get(0).url);
@@ -194,11 +193,10 @@ public class NewsFragment extends Fragment {
             e.printStackTrace();
         }
 
-        final Vector<NewsData> data = InfoManager.getInstance().getNewsData();
+        final Vector<NewsData> data = InfoManager.getInstance().getNewsData(NewsData.NewsType.NEWS);
         NewsAdapter adapter = new NewsAdapter(getActivity(), data);
         ListView listView = root.findViewById(R.id.listView);
         listView.setAdapter(adapter);
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
