@@ -30,6 +30,7 @@ import com.java.heyuze.Adapter.NewsAdapter;
 import com.java.heyuze.InfoManager;
 import com.java.heyuze.NewsContent;
 import com.java.heyuze.NewsData;
+import com.java.heyuze.NewsListHandler;
 import com.java.heyuze.R;
 import com.google.android.material.tabs.TabLayout;
 import com.java.heyuze.knowledgeData;
@@ -170,54 +171,11 @@ public class NewsFragment extends Fragment {
             }
         });
 
-        try
-        {
-            while (!InfoManager.getInstance().hasNewsData())
-            {
-                System.out.println("Please Wait!");
-            }
-            NewsContent test = InfoManager.getInstance().getNewsContent("5e8d92fa7ac1f2cf57f7bc75");
-            System.out.println(test.content);
-            System.out.println(test.date);
-            System.out.println(test.labels.get(0));
-            Vector<knowledgeData> test2 = InfoManager.getInstance().getKnowledge("病毒");
-            System.out.println(test2.get(0).description);
-            System.out.println(test2.get(0).url);
-            System.out.println(test2.get(0).hot);
-            System.out.println(test2.get(0).imgUrl);
-            System.out.println(test2.get(0).label);
-            System.out.println(test2.get(0).properties.get("鉴别诊断"));
-            System.out.println(test2.get(0).forwardRelations.get("无症状感染者"));
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        final Vector<NewsData> data = InfoManager.getInstance().getNewsData(NewsData.NewsType.NEWS);
-        NewsAdapter adapter = new NewsAdapter(getActivity(), data);
         ListView listView = root.findViewById(R.id.listView);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                                    long arg3) {
-                Intent intent = new Intent(getActivity(), NewsActivity.class);
-
-                try {
-                    NewsContent ctn = InfoManager.getInstance().getNewsContent(data.get(position).id);
-                    intent.putExtra("title", data.get(position).title);
-                    intent.putExtra("date", data.get(position).time);
-                    intent.putExtra("content", ctn.content);
-                } catch (Exception e) {
-                    System.out.println("EXCEPTION GET NEWS CONTENT?");
-                }
-
-                getActivity().startActivity(intent);
-
-            }
-        });
+        NewsListHandler newsListHandler = new NewsListHandler(listView, this);
+        Thread newsListThread = new Thread(newsListHandler);
+        newsListThread.start();
+        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 
         return root;
     }

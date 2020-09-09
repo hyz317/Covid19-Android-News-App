@@ -143,8 +143,8 @@ public class InfoManager
         }
         return null;
     }
-
-    private void loadData(InfoType type) throws Exception
+  
+    private synchronized void loadData(InfoType type) throws Exception
     {
         switch (type)
         {
@@ -200,7 +200,7 @@ public class InfoManager
     }
 
 
-    public String updateCovidData(InfoType type) throws Exception
+    public synchronized String updateCovidData(InfoType type) throws Exception
     {
         String jsonString;
         switch (type)
@@ -231,7 +231,7 @@ public class InfoManager
         return infectData;
     }
 
-    public Vector<NewsData> getNewsData(NewsData.NewsType type)
+    public synchronized Vector<NewsData> getNewsData(NewsData.NewsType type)
     {
         Vector<NewsData> res = new Vector<>();
         for (NewsData entry: newsData)

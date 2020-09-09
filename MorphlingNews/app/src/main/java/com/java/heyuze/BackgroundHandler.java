@@ -1,6 +1,7 @@
 package com.java.heyuze;
 
 import android.content.Context;
+import android.icu.text.IDNA;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,8 +22,8 @@ public class BackgroundHandler implements Runnable
         try
         {
             InfoManager instance = InfoManager.getInstance();
-            instance.loadJSON(InfoManager.InfoType.NEWSDATA, fileDir + "news_data.json");
-            instance.loadJSON(InfoManager.InfoType.INFECTDATA, fileDir + "infect_data.json");
+            // instance.loadJSON(InfoManager.InfoType.NEWSDATA, fileDir + "news_data.json");
+            // instance.loadJSON(InfoManager.InfoType.INFECTDATA, fileDir + "infect_data.json");
 
             String infectString = instance.updateCovidData(InfoManager.InfoType.INFECTDATA);
             String newsString = instance.updateCovidData(InfoManager.InfoType.NEWSDATA);
