@@ -7,40 +7,6 @@
     android:orientation="vertical"
     >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
-            app:tabMode="scrollable">
-
-        </com.google.android.material.tabs.TabLayout>
-
-        <Button
-            android:id="@+id/category"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:background="#FFFFFF"
-            android:text="+" />
-
-
-    </FrameLayout>
-
-    <Button
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:id="@+id/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#FFFFFF"
-        android:text="🔍 点击搜索"
-        android:textColor="#AAAAAA"/>
-
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"

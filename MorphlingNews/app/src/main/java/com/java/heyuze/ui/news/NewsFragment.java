@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.java.heyuze.Activity.MainActivity;
 import com.java.heyuze.Activity.NewsActivity;
+import com.java.heyuze.Activity.SearchActivity;
 import com.java.heyuze.Adapter.NewsAdapter;
 import com.java.heyuze.InfoManager;
 import com.java.heyuze.NewsContent;
@@ -67,7 +68,6 @@ public class NewsFragment extends Fragment {
                     mRefreshLayout.finishRefresh(true);
                     break;
                 case 2: // load more
-                    List<String> mLoadMoreDatas = (List<String>) msg.obj;
                     mRefreshLayout.finishLoadMore(true);
                     break;
             }
@@ -174,6 +174,7 @@ public class NewsFragment extends Fragment {
         newsViewModel =
                 ViewModelProviders.of(this).get(NewsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_news, container, false);
+        listView = root.findViewById(R.id.listView);
 
         /*
         final TextView textView = root.findViewById(R.id.text_home);
@@ -270,7 +271,6 @@ public class NewsFragment extends Fragment {
             }
         });
 
-        listView = root.findViewById(R.id.listView);
         NewsListHandler newsListHandler = new NewsListHandler(listView, this);
         Thread newsListThread = new Thread(newsListHandler);
         newsListThread.start();
@@ -279,6 +279,7 @@ public class NewsFragment extends Fragment {
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                if (!InfoManager.getInstance().hasNewsData()) return;
                 Message message = new Message();
                 message.what = 1;
                 try {
@@ -293,11 +294,21 @@ public class NewsFragment extends Fragment {
         mRefreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                if (!InfoManager.getInstance().hasNewsData()) return;
                 Message message = new Message();
                 message.what = 2;
                 loadMoreNews();
                 System.out.println("load more News finished. " + adapter.getCount());
                 mHandler.sendMessageDelayed(message,1000);
+            }
+        });
+
+        Button searchBar = root.findViewById(R.id.search_bar);
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                getActivity().startActivity(intent);
             }
         });
 

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.java.heyuze"
-        minSdkVersion 14
+        minSdkVersion defaultMinSdkVersion
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -41,4 +41,5 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
     implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.carson_ho:SearchLayout:1.0.1'
 }

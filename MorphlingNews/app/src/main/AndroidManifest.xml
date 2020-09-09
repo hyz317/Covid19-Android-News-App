@@ -31,6 +31,20 @@
                 <action android:name="android.intent.action.NEWS" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity.SearchActivity"
+            android:label="search">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activity.SearchContentActivity"
+            android:label="search">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCHCONTENT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
