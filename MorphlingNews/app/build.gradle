@@ -42,3 +42,8 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
     implementation 'com.android.support:appcompat-v7:25.3.1'
 }
+
+dependencies {
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+}
+

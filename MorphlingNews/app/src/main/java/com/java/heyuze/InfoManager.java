@@ -186,7 +186,7 @@ public class InfoManager
                         data.confirmed.add(detail.getIntValue(0));
                         data.suspected.add(detail.getIntValue(1));
                         data.cured.add(detail.getIntValue(2));
-                        data.dead.add(detail.getIntValue(1));
+                        data.dead.add(detail.getIntValue(3));
                     }
                     resInfect.add(data);
                 }
@@ -321,6 +321,9 @@ public class InfoManager
         NewsContent data = new NewsContent();
         data.content = newsContent.getString("content");
         data.date = newsContent.getString("date");
+        data.type = newsContent.getString("type");
+        if (data.type == "news" || data.type == "paper")
+            data.source = newsContent.getString("source");
         JSONArray labels = newsContent.getJSONArray("entities");
         for (int i = 0; i < labels.size(); ++i)
             data.labels.add(labels.getJSONObject(i).getString("label"));
@@ -361,3 +364,4 @@ public class InfoManager
         return res;
     }
 }
+
