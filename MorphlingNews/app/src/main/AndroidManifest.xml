@@ -57,6 +57,13 @@
                 <action android:name="android.intent.action.COVIDINFO" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity.WXEntryActivity"
+            android:label="wxshare">
+            <intent-filter>
+                <action android:name="android.intent.action.WXSHARE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

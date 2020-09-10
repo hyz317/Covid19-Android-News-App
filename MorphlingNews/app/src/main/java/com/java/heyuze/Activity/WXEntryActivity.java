@@ -25,6 +25,8 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newscontent);
+        Intent intent = this.getIntent();
+        String info = intent.getStringExtra("info");
         wxShare = new WXShare(this);
         wxShare.setListener(new OnResponseListener()
         {
@@ -49,7 +51,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
         Log.e("WXEntryActivity", "WXEntryActivity");
         WXShare share = new WXShare(this);
         api = share.getApi();
-        wxShare.share("这是要分享的文字");
+        wxShare.share(info);
         try
         {
             if (!api.handleIntent(getIntent(), this))
