@@ -5,9 +5,9 @@ import java.util.SortedMap;
 
 public class NewsData
 {
-    public enum NewsType {NEWS, PAPER, EVENT}
+    public enum NewsType {NEWS, PAPER, EVENT, POINTS}
     public String id, time, title, lang;
     public NewsType type;
     public HashMap<String, Integer> wordCount = new HashMap<>();
-    public Integer value = 0;
+    double value = 0;
 }

@@ -175,7 +175,6 @@ public class NewsFragment extends Fragment {
         NewsListHandler newsListHandler = new NewsListHandler(listView, this);
         Thread newsListThread = new Thread(newsListHandler);
         newsListThread.start();
-        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 
         return root;
     }

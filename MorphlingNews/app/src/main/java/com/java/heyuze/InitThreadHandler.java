@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Vector;
 
-public class BackgroundHandler implements Runnable
+public class InitThreadHandler implements Runnable
 {
     private String fileDir;
-    public BackgroundHandler(String fileDir)
+    public InitThreadHandler(String fileDir)
     {
         this.fileDir = fileDir;
     }
@@ -21,14 +21,16 @@ public class BackgroundHandler implements Runnable
     {
         try
         {
-            InfoManager instance = InfoManager.getInstance();
-            // instance.loadJSON(InfoManager.InfoType.NEWSDATA, fileDir + "news_data.json");
-            // instance.loadJSON(InfoManager.InfoType.INFECTDATA, fileDir + "infect_data.json");
-
-            String infectString = instance.updateCovidData(InfoManager.InfoType.INFECTDATA);
-            String newsString = instance.updateCovidData(InfoManager.InfoType.NEWSDATA);
-            if (infectString != null) instance.saveJSON(fileDir + "infect_data.json", infectString);
-            if (newsString != null) instance.saveJSON(fileDir + "news_data.json", newsString);
+            synchronized (this)
+            {
+                InfoManager instance = InfoManager.getInstance();
+                instance.loadJSON(InfoManager.InfoType.NEWSDATA, fileDir + "news_data.json");
+                instance.loadJSON(InfoManager.InfoType.INFECTDATA, fileDir + "infect_data.json");
+                String infectString = instance.updateCovidData(InfoManager.InfoType.INFECTDATA);
+                String newsString = instance.updateCovidData(InfoManager.InfoType.NEWSDATA);
+                if (infectString != null) instance.saveJSON(fileDir + "infect_data.json", infectString);
+                if (newsString != null) instance.saveJSON(fileDir + "news_data.json", newsString);
+            }
 
             /*
 			Vector<NewsData> data = instance.getNewsData();
