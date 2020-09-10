@@ -20,8 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.java.heyuze.*;
-
-import java.util.Vector;
+import com.tencent.mm.opensdk.openapi.*;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -29,8 +28,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        InfoManager.getInstance();
         super.onCreate(savedInstanceState);
+        InfoManager.getInstance();
+        final String APP_ID = "wxxxxxxx"; //替换为申请到的app id
+        IWXAPI wx_api; //全局的微信api对象
+        wx_api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
