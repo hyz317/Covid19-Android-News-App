@@ -9,9 +9,11 @@
         android:id="@+id/tv_covid_country"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="1.2"
         android:text="国家"
         android:padding="5dp"
+        android:ellipsize="end"
+        android:lines="1"
         android:background="@drawable/textlines"/>
 
     <TextView
@@ -21,33 +23,41 @@
         android:layout_weight="1"
         android:text="新增"
         android:padding="5dp"
+        android:ellipsize="end"
+        android:lines="1"
         android:background="@drawable/textlines"/>
 
     <TextView
         android:id="@+id/tv_covid_confirmed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="1.2"
         android:text="确诊"
         android:padding="5dp"
+        android:ellipsize="end"
+        android:lines="1"
         android:background="@drawable/textlines"/>
 
     <TextView
         android:id="@+id/tv_covid_cured"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="1.2"
         android:text="治愈"
         android:padding="5dp"
+        android:ellipsize="end"
+        android:lines="1"
         android:background="@drawable/textlines"/>
 
     <TextView
         android:id="@+id/tv_covid_dead"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:text="死亡"
         android:padding="5dp"
+        android:ellipsize="end"
+        android:lines="1"
         android:background="@drawable/textlines"/>
 
     <FrameLayout
@@ -57,7 +67,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:text="    "
             android:padding="5dp"
             android:background="@drawable/textlines"/>

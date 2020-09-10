@@ -7,27 +7,8 @@
     android:orientation="vertical"
     >
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/covid_tab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="50dp"
-        app:tabMode="scrollable">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="国内疫情"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="全球疫情"/>
-
-    </com.google.android.material.tabs.TabLayout>
-
     <TextView
-        android:id="@+id/covid_title"
+        android:id="@+id/covid_info_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
@@ -155,80 +136,11 @@
 
     </GridLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
-
-        <TextView
-            android:id="@+id/region_field"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.2"
-            android:text="省份"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:background="@drawable/textlines"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:text="新增"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:textColor="#455FCE"
-            android:background="@drawable/textlines"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.2"
-            android:text="确诊"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:textColor="#E10000"
-            android:background="@drawable/textlines"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.2"
-            android:text="治愈"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:textColor="#15A582"
-            android:background="@drawable/textlines"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:text="死亡"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:textColor="#00193C"
-            android:background="@drawable/textlines"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:text="详情"
-            android:background="@drawable/textlines"/>
-
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/covid_info_sheet"
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
-    </ListView>
+        android:layout_margin="30dp"/>
 
 
 </LinearLayout>

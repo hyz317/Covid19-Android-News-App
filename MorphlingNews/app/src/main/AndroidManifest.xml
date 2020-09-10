@@ -50,6 +50,13 @@
                 <action android:name="android.intent.action.SEARCHCONTENT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity.CovidInfoActivity"
+            android:label="covid_info">
+            <intent-filter>
+                <action android:name="android.intent.action.COVIDINFO" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
