@@ -46,12 +46,12 @@ public class NewsDictionary
     public synchronized void addTitle(String title, NewsData news, JiebaSegmenter segmenter)
     {
         List<String> words = segmenter.sentenceProcess(title);
+        for (int i = 0; i < title.length(); ++i)
+            words.add(String.valueOf(title.charAt(i)));
         for (String word : words)
         {
             if (getUselessText().contains(word)) continue;
             addKeyWord(word, news);
-            if (news.wordCount.get(word) == null) news.wordCount.put(word, 1);
-            else news.wordCount.put(word, news.wordCount.get(word) + 1);
         }
     }
 }

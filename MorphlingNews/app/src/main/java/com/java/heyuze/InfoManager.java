@@ -133,7 +133,6 @@ public class InfoManager
         writer.write(buf);
         writer.flush();
         writer.close();
-        File newFile = new File(path);
     }
 
     private String getJSON(String urlString) throws Exception
@@ -426,10 +425,11 @@ public class InfoManager
 
     public synchronized Vector<NewsData> searchNewsData(NewsData.NewsType type, String text)
     {
-        for (NewsData news: newsData)
-            news.value = 0;
+        HashSet<NewsData> temp = new HashSet<>();
         Vector<NewsData> res = new Vector<>();
         List<String> words = segmenter.sentenceProcess(text);
+        for (int i = 0; i < text.length(); ++i)
+            words.add(String.valueOf(text.charAt(i)));
         for (String word: words)
         {
             if (newsDict.getUselessText().contains(word)) continue;
@@ -437,13 +437,15 @@ public class InfoManager
             if (newsList == null) continue;
             for (NewsData news: newsList)
             {
-                int tf = news.wordCount.get(word);
+                String title = news.title;
+                int tf = (title.length() - title.replace(word, "").length()) / word.length();
                 double idf = Math.log(newsDict.getNewsNum() / (double)(newsList.size()));
                 news.value += tf * idf;
+                temp.add(news);
             }
         }
-        for (NewsData news: newsData)
-            if (news.value != 0) res.add(news);
+        for (NewsData news: temp)
+            if (news.value != 0 && news.type == type) res.add(news);
 
         Collections.sort(res, new Comparator<NewsData>()
         {
@@ -455,6 +457,10 @@ public class InfoManager
                 else return 0;
             }
         });
+
+        for (NewsData news: temp)
+            news.value = 0;
+
         return res;
     }
 }
