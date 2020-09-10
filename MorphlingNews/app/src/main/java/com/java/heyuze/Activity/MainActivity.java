@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        InfoManager.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -44,10 +45,16 @@ public class MainActivity extends AppCompatActivity
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        DictionaryHandler dictionaryHandler = new DictionaryHandler();
+        Thread dictionaryThread = new Thread(dictionaryHandler);
+        dictionaryThread.start();
+
         String fileDir = getApplicationContext().getFilesDir().getPath() + "/";
-        BackgroundHandler backgroundHandler = new BackgroundHandler(fileDir);
-        Thread backgroundThread = new Thread(backgroundHandler);
-        backgroundThread.start();
+        InitThreadHandler initThreadHandler = new InitThreadHandler(fileDir);
+        Thread initThread = new Thread(initThreadHandler);
+        initThread.start();
+
+
 
         /*
         try

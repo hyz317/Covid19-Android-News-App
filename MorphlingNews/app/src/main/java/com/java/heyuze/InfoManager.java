@@ -15,8 +15,12 @@ import java.lang.invoke.VolatileCallSite;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Collections;
 
@@ -30,7 +34,9 @@ import com.huaban.analysis.jieba.*;
 
         public boolean hasInfectData(); // 判断疫情信息是否加载完毕
         public boolean hasNewsData(); // 判断新闻信息是否加载完毕
+        public boolean isReadyForSearch(); // 判断搜索功能是否加载完毕
 
+        public void loadJieba(); // 加载Jieba分词器
         public void loadJSON(InfoType type, String path); // 加载被本地JSON文件
         public void saveJSON(String path, String buf); // 保存本地JSON文件
         public String updateCovidData(InfoType type); // 通过HTTP更新疫情数据
@@ -40,6 +46,8 @@ import com.huaban.analysis.jieba.*;
         public Vector<knowledgeData> getKnowledge(String key); // 通过HTTP获得某关键词的知识图谱
         public NewsContent getNewsContent(String id) // 通过HTTP获得新闻正文
 
+        public Vector<NewsData> searchNewsData(NewsData.NewsType type, String text) // 根据标题搜索新闻
+
 */
 ///////////////////////////////////////
 
@@ -47,19 +55,19 @@ public class InfoManager
 {
     public enum InfoType
     {INFECTDATA, NEWSDATA}
+    public boolean dictNeedUpdate = false;
 
     private static InfoManager instance = null;
-    private JSONObject infectJSON= null;
-    private JSONObject newsJSON= null;
+    private JSONObject infectJSON = null;
+    private JSONObject newsJSON = null;
 
     private Vector<InfectData> infectData = null;
     private Vector<NewsData> newsData = null;
 
-    private Vector<String> keywordHistory = new Vector<>();
+    private NewsDictionary newsDict = null;
+    JiebaSegmenter segmenter = null;
 
-    private InfoManager()
-    {
-    }
+    private InfoManager() {}
 
     public static InfoManager getInstance()
     {
@@ -70,6 +78,10 @@ public class InfoManager
     public boolean hasInfectData() { return infectData != null; }
 
     public boolean hasNewsData() { return newsData != null; }
+
+    public boolean isReadyForSearch() { return newsDict != null; }
+
+    public void loadJieba() { segmenter = new JiebaSegmenter(); }
 
     public void loadJSON(InfoType type, String path) throws Exception
     {
@@ -109,14 +121,11 @@ public class InfoManager
     {
         File file = new File(path);
         if (!file.exists()) file.createNewFile();
-        System.out.println("Create Success");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "UTF-8"));
         writer.write(buf);
         writer.flush();
         writer.close();
         File newFile = new File(path);
-        if (newFile.exists())
-            System.out.println("Write Success");
     }
 
     private String getJSON(String urlString) throws Exception
@@ -143,13 +152,25 @@ public class InfoManager
         }
         return null;
     }
+
+    public void loadDictionary()
+    {
+        NewsDictionary resDict = new NewsDictionary();
+        for (NewsData data: newsData)
+            resDict.addTitle(data.title, data, segmenter);
+        resDict.setNewsNum(newsData.size());
+        synchronized (this)
+        {
+            newsDict = resDict;
+        }
+    }
   
-    private synchronized void loadData(InfoType type) throws Exception
+    private void loadData(InfoType type) throws Exception
     {
         switch (type)
         {
             case INFECTDATA:
-                infectData = new Vector<>();
+                Vector<InfectData> resInfect = new Vector<>();
                 for (String key : infectJSON.keySet())
                 {
                     InfectData data = new InfectData();
@@ -167,11 +188,15 @@ public class InfoManager
                         data.cured.add(detail.getIntValue(2));
                         data.dead.add(detail.getIntValue(1));
                     }
-                    infectData.add(data);
+                    resInfect.add(data);
+                }
+                synchronized (this)
+                {
+                    infectData = resInfect;
                 }
                 break;
             case NEWSDATA:
-                newsData = new Vector<>();
+                Vector<NewsData> resNews = new Vector<>();
                 JSONArray contents = newsJSON.getJSONArray("datas");
                 for (int i = 0; i < contents.size(); ++i)
                 {
@@ -181,13 +206,15 @@ public class InfoManager
                         data.type = NewsData.NewsType.PAPER;
                     else if (content.getString("type").equals("news"))
                         data.type = NewsData.NewsType.NEWS;
+                    else if (content.getString("type").equals("points"))
+                        data.type = NewsData.NewsType.POINTS;
                     else data.type = NewsData.NewsType.EVENT;
                     data.id = content.getString("_id");
                     data.time = content.getString("time");
                     data.title = content.getString("title");
-                    newsData.add(data);
+                    resNews.add(data);
                 }
-                Collections.sort(newsData, new Comparator<NewsData>()
+                Collections.sort(resNews, new Comparator<NewsData>()
                 {
                     @Override
                     public int compare(NewsData a, NewsData b)
@@ -195,12 +222,16 @@ public class InfoManager
                         return b.time.compareTo(a.time);
                     }
                 });
+                synchronized (this)
+                {
+                    newsData = resNews;
+                    dictNeedUpdate = true;
+                }
                 break;
         }
     }
 
-
-    public synchronized String updateCovidData(InfoType type) throws Exception
+    public String updateCovidData(InfoType type) throws Exception
     {
         String jsonString;
         switch (type)
@@ -226,7 +257,7 @@ public class InfoManager
         return null;
     }
 
-    public Vector<InfectData> getInfectData()
+    public synchronized Vector<InfectData> getInfectData()
     {
         return infectData;
     }
@@ -294,5 +325,39 @@ public class InfoManager
         for (int i = 0; i < labels.size(); ++i)
             data.labels.add(labels.getJSONObject(i).getString("label"));
         return data;
+    }
+
+    public synchronized Vector<NewsData> searchNewsData(NewsData.NewsType type, String text)
+    {
+        for (NewsData news: newsData)
+            news.value = 0;
+        Vector<NewsData> res = new Vector<>();
+        List<String> words = segmenter.sentenceProcess(text);
+        for (String word: words)
+        {
+            if (newsDict.getUselessText().contains(word)) continue;
+            HashSet<NewsData> newsList = newsDict.getKeywordDictionary().get(word);
+            if (newsList == null) continue;
+            for (NewsData news: newsList)
+            {
+                int tf = news.wordCount.get(word);
+                double idf = Math.log(newsDict.getNewsNum() / (double)(newsList.size()));
+                news.value += tf * idf;
+            }
+        }
+        for (NewsData news: newsData)
+            if (news.value != 0) res.add(news);
+
+        Collections.sort(res, new Comparator<NewsData>()
+        {
+            @Override
+            public int compare(NewsData a, NewsData b)
+            {
+                if (b.value > a.value + 0.0005) return 1;
+                else if (a.value > b.value + 0.0005) return -1;
+                else return 0;
+            }
+        });
+        return res;
     }
 }

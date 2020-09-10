@@ -29,7 +29,7 @@ public class NewsListHandler implements Runnable {
             synchronized (this) {
                 if (!InfoManager.getInstance().hasNewsData()) {
                     try {
-                        wait(200);
+                        wait(100);
                         System.out.println("loading...");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -40,6 +40,7 @@ public class NewsListHandler implements Runnable {
             }
         }
         synchronized (InfoManager.getInstance()) {
+            System.out.println(fragment.getActivity());
             fragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
