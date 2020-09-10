@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.java.heyuze"
-        minSdkVersion 14
+        minSdkVersion defaultMinSdkVersion
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,7 @@ dependencies {
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation files('libs\\fastjson-1.2.73.jar')
     implementation files('libs\\jieba-analysis-1.0.2.jar')
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -41,4 +42,6 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
     implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.carson_ho:SearchLayout:1.0.1'
+    implementation 'com.github.huangyanbin:SmartTable:2.2.0'
 }
