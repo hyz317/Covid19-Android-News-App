@@ -13,6 +13,7 @@ import com.java.heyuze.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class NewsAdapter extends BaseAdapter {
     private List<NewsData> data = new ArrayList<NewsData>();//新闻列表集合
@@ -74,5 +75,9 @@ public class NewsAdapter extends BaseAdapter {
         pack.tvContent.setText(content_tmp);
     }
 
+    public void addData(Vector<NewsData> data) {
+        this.data.addAll(data);
+        notifyDataSetChanged();
+    }
 
 }
