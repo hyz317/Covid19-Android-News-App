@@ -7,12 +7,8 @@ public class SimpleInfectData {
     public int cure;
     public int dead;
 
-    public SimpleInfectData(InfectData d, String type) {
-        if (type.equals("China")) {
-            this.name = d.location.get(1);
-        } else {
-            this.name = d.location.get(0);
-        }
+    public SimpleInfectData(InfectData d) {
+        this.name = d.location.get(d.location.size() - 1);
         this.accumulation = d.confirmed.get(d.confirmed.size() - 1);
         this.increase = this.accumulation - d.confirmed.get(d.confirmed.size() - 2);
         this.cure = d.cured.get(d.cured.size() - 1);

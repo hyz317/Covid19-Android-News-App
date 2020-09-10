@@ -186,7 +186,7 @@ public class InfoManager
                         data.confirmed.add(detail.getIntValue(0));
                         data.suspected.add(detail.getIntValue(1));
                         data.cured.add(detail.getIntValue(2));
-                        data.dead.add(detail.getIntValue(1));
+                        data.dead.add(detail.getIntValue(3));
                     }
                     resInfect.add(data);
                 }
