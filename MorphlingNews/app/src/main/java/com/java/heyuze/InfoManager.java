@@ -321,6 +321,9 @@ public class InfoManager
         NewsContent data = new NewsContent();
         data.content = newsContent.getString("content");
         data.date = newsContent.getString("date");
+        data.type = newsContent.getString("type");
+        if (data.type == "news" || data.type == "paper")
+            data.source = newsContent.getString("source");
         JSONArray labels = newsContent.getJSONArray("entities");
         for (int i = 0; i < labels.size(); ++i)
             data.labels.add(labels.getJSONObject(i).getString("label"));
@@ -361,3 +364,4 @@ public class InfoManager
         return res;
     }
 }
+
