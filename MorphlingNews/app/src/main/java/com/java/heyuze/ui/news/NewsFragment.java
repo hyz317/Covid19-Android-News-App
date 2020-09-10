@@ -78,10 +78,10 @@ public class NewsFragment extends Fragment {
     public void updateNews(NewsData.NewsType type) {
         newsData = InfoManager.getInstance().getNewsData(type);
         final Vector<NewsData> data = new Vector<>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < Math.min(6, newsData.size()); i++) {
             data.add(newsData.get(i));
         }
-        newsCount = 6;
+        newsCount = Math.min(6, newsData.size());
         adapter = new NewsAdapter(getActivity(), data);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,17 +104,20 @@ public class NewsFragment extends Fragment {
 
     private void loadMoreNews() {
         Vector<NewsData> data = new Vector<>();
-        for (int i = newsCount; i < newsCount + 6; i++) {
+        if (newsCount == newsData.size()) return;
+        for (int i = newsCount; i < Math.min(newsCount + 6, newsData.size()); i++) {
             data.add(newsData.get(i));
         }
         newsCount += 6;
+        newsCount = Math.min(newsCount, newsData.size());
         adapter.addData(data);
     }
 
     private void updateLooking(final Button b, final GridLayout looking, final GridLayout unlooking) {
-        System.out.println("looking: " + lookingCategories);
-        System.out.println("unlooking: " + unlookingCategories);
+        // System.out.println("looking: " + lookingCategories);
+        // System.out.println("unlooking: " + unlookingCategories);
         if (lookingCategories.contains((String) b.getText())) {
+            if (lookingCategories.size() == 1) return;
             System.out.println("!!! is in looking");
             lookingCategories.remove((String) b.getText());
             unlookingCategories.add('+' + (String) b.getText());
@@ -308,6 +311,7 @@ public class NewsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
+                intent.putExtra("type", nowNewsType.toString());
                 getActivity().startActivity(intent);
             }
         });
