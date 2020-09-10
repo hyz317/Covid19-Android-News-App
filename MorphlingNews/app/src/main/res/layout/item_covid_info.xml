@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_covid_country"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="国家"
+        android:padding="5dp"
+        android:background="@drawable/textlines"/>
+
+    <TextView
+        android:id="@+id/tv_covid_increase"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="新增"
+        android:padding="5dp"
+        android:background="@drawable/textlines"/>
+
+    <TextView
+        android:id="@+id/tv_covid_confirmed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="确诊"
+        android:padding="5dp"
+        android:background="@drawable/textlines"/>
+
+    <TextView
+        android:id="@+id/tv_covid_cured"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="治愈"
+        android:padding="5dp"
+        android:background="@drawable/textlines"/>
+
+    <TextView
+        android:id="@+id/tv_covid_dead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="死亡"
+        android:padding="5dp"
+        android:background="@drawable/textlines"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="    "
+            android:padding="5dp"
+            android:background="@drawable/textlines"/>
+
+        <ImageButton
+            android:id="@+id/tv_covid_more"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/more"
+            android:scaleType="fitCenter"
+            android:background="#00000000"/>
+
+
+    </FrameLayout>
+
+</LinearLayout>
