@@ -10,4 +10,21 @@ public class InfectData
     public Vector<Integer> suspected = new Vector<>();
     public Vector<Integer> cured = new Vector<>();
     public Vector<Integer> dead = new Vector<>();
+
+    public String toString() {
+        String str = "";
+        for (String l : location) {
+            str += l;
+            str += ",";
+        }
+        str += "BeginDate";
+        str += " ";
+        str += beginDate;
+        str += " confirmed ";
+        for (Integer l : confirmed) {
+            str += l;
+            str += " ";
+        }
+        return str;
+    }
 }
