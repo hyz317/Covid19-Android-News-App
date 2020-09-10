@@ -37,7 +37,7 @@ import com.java.heyuze.NewsData;
 import com.java.heyuze.NewsListHandler;
 import com.java.heyuze.R;
 import com.google.android.material.tabs.TabLayout;
-import com.java.heyuze.knowledgeData;
+import com.java.heyuze.KnowledgeData;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;

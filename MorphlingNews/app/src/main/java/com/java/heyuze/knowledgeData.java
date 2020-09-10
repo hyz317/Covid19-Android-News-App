@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-public class knowledgeData
+public class KnowledgeData
 {
     public Double hot;
     public String url, imgUrl;

@@ -1,5 +1,6 @@
 package com.java.heyuze;
 
+import android.renderscript.ScriptC;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -42,11 +43,14 @@ import com.huaban.analysis.jieba.*;
         public String updateCovidData(InfoType type); // 通过HTTP更新疫情数据
 
         public Vector<InfectData> getInfectData(); // 获得加载好的疫情数据
-        public Vector<NewsData> getNewsData(NewsData.NewsType type) // 获得加载好的新闻
-        public Vector<knowledgeData> getKnowledge(String key); // 通过HTTP获得某关键词的知识图谱
-        public NewsContent getNewsContent(String id) // 通过HTTP获得新闻正文
+        public Vector<NewsData> getNewsData(NewsData.NewsType type); // 获得加载好的新闻
+        public Vector<KnowledgeData> getKnowledge(String key); // 通过HTTP获得某关键词的知识图谱
+        public NewsContent getNewsContent(String id); // 通过HTTP获得新闻正文
 
-        public Vector<NewsData> searchNewsData(NewsData.NewsType type, String text) // 根据标题搜索新闻
+        public void loadScholarData(); // 加载知疫学者信息（很快，开应用后台秒加载）
+        public Vector<ScholarData> getScholarData(ScholarData.ScholarType type); // 获得知疫学者信息
+
+        public Vector<NewsData> searchNewsData(NewsData.NewsType type, String text); // 根据标题搜索新闻
 
 */
 ///////////////////////////////////////
@@ -54,15 +58,17 @@ import com.huaban.analysis.jieba.*;
 public class InfoManager
 {
     public enum InfoType
-    {INFECTDATA, NEWSDATA}
+    {INFECTDATA, NEWSDATA, SCHOLARDATA}
     public boolean dictNeedUpdate = false;
 
     private static InfoManager instance = null;
     private JSONObject infectJSON = null;
     private JSONObject newsJSON = null;
+    private JSONObject scholarJSON = null;
 
     private Vector<InfectData> infectData = null;
     private Vector<NewsData> newsData = null;
+    private Vector<ScholarData> scholarData = null;
 
     private NewsDictionary newsDict = null;
     JiebaSegmenter segmenter = null;
@@ -78,6 +84,8 @@ public class InfoManager
     public boolean hasInfectData() { return infectData != null; }
 
     public boolean hasNewsData() { return newsData != null; }
+
+    public boolean hasScholarData() { return scholarData != null;}
 
     public boolean isReadyForSearch() { return newsDict != null; }
 
@@ -165,7 +173,7 @@ public class InfoManager
         }
     }
   
-    private void loadData(InfoType type) throws Exception
+    private void loadData(InfoType type)
     {
         switch (type)
         {
@@ -190,6 +198,14 @@ public class InfoManager
                     }
                     resInfect.add(data);
                 }
+                Collections.sort(resInfect, new Comparator<InfectData>()
+                {
+                    @Override
+                    public int compare(InfectData a, InfectData b)
+                    {
+                        return b.confirmed.lastElement().compareTo(a.confirmed.lastElement());
+                    }
+                });
                 synchronized (this)
                 {
                     infectData = resInfect;
@@ -270,16 +286,16 @@ public class InfoManager
         return res;
     }
 
-    public Vector<knowledgeData> getKnowledge(String key) throws Exception
+    public Vector<KnowledgeData> getKnowledge(String key) throws Exception
     {
         String jsonString = getJSON("https://innovaapi.aminer.cn/covid/api/v1/pneumonia/entityquery?entity=" + key);
         if (jsonString == null) return null;
         JSONArray knowledgeContents= JSONObject.parseObject(jsonString).getJSONArray("data");
-        Vector<knowledgeData> res = new Vector<>();
+        Vector<KnowledgeData> res = new Vector<>();
         for (int i = 0; i < knowledgeContents.size(); ++i)
         {
             JSONObject knowledgeContent = knowledgeContents.getJSONObject(i);
-            knowledgeData data = new knowledgeData();
+            KnowledgeData data = new KnowledgeData();
             data.hot = knowledgeContent.getDouble("hot");
             data.label = knowledgeContent.getString("label");
             data.url = knowledgeContent.getString("url");
@@ -302,10 +318,10 @@ public class InfoManager
             }
             res.add(data);
         }
-        Collections.sort(res, new Comparator<knowledgeData>()
+        Collections.sort(res, new Comparator<KnowledgeData>()
         {
             @Override
-            public int compare(knowledgeData a, knowledgeData b)
+            public int compare(KnowledgeData a, KnowledgeData b)
             {
                 return b.hot.compareTo(a.hot);
             }
@@ -322,12 +338,90 @@ public class InfoManager
         data.content = newsContent.getString("content");
         data.date = newsContent.getString("date");
         data.type = newsContent.getString("type");
-        if (data.type == "news" || data.type == "paper")
+        if (data.type.equals("news") || data.type.equals("paper"))
             data.source = newsContent.getString("source");
         JSONArray labels = newsContent.getJSONArray("entities");
         for (int i = 0; i < labels.size(); ++i)
             data.labels.add(labels.getJSONObject(i).getString("label"));
         return data;
+    }
+
+    public synchronized void loadScholarData() throws Exception
+    {
+        String jsonString = getJSON("https://innovaapi.aminer.cn/predictor/api/v1/valhalla/highlight/get_ncov_expers_list?v=2");
+        if (jsonString == null) return;
+        scholarData = new Vector<>();
+        JSONArray scholarList = JSONObject.parseObject(jsonString).getJSONArray("data");
+        for (int i = 0; i < scholarList.size(); ++i)
+        {
+            JSONObject scholar = scholarList.getJSONObject(i);
+            ScholarData data = new ScholarData();
+            data.imgUrl = scholar.getString("avatar");
+            data.id = scholar.getString("id");
+            JSONObject indices = scholar.getJSONObject("indices");
+            data.activity = String.valueOf(indices.getDouble("activity"));
+            data.citations = String.valueOf(indices.getInteger("citations"));
+            data.diversity = String.valueOf(indices.getDouble("diversity"));
+            data.gIndex = String.valueOf(indices.getInteger("gindex"));
+            data.hIndex = String.valueOf(indices.getInteger("hindex"));
+            data.newStar = String.valueOf(indices.getDouble("newStar"));
+            data.risingStar = String.valueOf(indices.getDouble("risingStar"));
+            data.pubs = String.valueOf(indices.getInteger("pubs"));
+            data.sociability = String.valueOf(indices.getDouble("sociability"));
+            data.nameEn = scholar.getString("name");
+            data.nameCn = scholar.getString("name_zh");
+            data.numFollowed = String.valueOf(scholar.getInteger("num_followed"));
+            data.numViewed = String.valueOf(scholar.getInteger("num_viewed"));
+
+            if (scholar.getBoolean("is_passedaway")) data.type = ScholarData.ScholarType.PASSAWAY;
+            else data.type = ScholarData.ScholarType.HIGHATTENTION;
+
+            data.detail = new ScholarDataDetailed();
+            JSONObject profile = scholar.getJSONObject("profile");
+            data.detail.address = profile.getString("address");
+            data.detail.affiliation = profile.getString("affiliation");
+            data.detail.biography = profile.getString("bio");
+            data.detail.education = profile.getString("edu");
+            data.detail.email = profile.getString("email");
+            data.detail.homepage = profile.getString("homepage");
+            data.detail.phone = profile.getString("phone");
+            data.detail.position = profile.getString("position");
+            data.detail.work = profile.getString("work");
+
+            JSONArray tagName = scholar.getJSONArray("tags");
+            JSONArray tagScore = scholar.getJSONArray("tags_score");
+            if (tagName != null)
+            {
+                double totalScore = 0.0;
+                for (int j = 0; j < tagName.size(); ++j)
+                    totalScore += (double)tagScore.getInteger(j);
+                for (int j = 0; j < tagName.size(); ++j)
+                {
+                    String name = tagName.getString(j);
+                    double score = (double)tagScore.getInteger(j);
+                    data.detail.tag.put(name, score / totalScore);
+                }
+            }
+
+            if (data.type == ScholarData.ScholarType.PASSAWAY)
+            {
+                data.pDetail = new PassawayDataDetailed();
+                data.pDetail.passawayDay = String.valueOf(profile.getInteger("passaway_day"));
+                data.pDetail.passawayMonth = String.valueOf(profile.getInteger("passaway_month"));
+                data.pDetail.passawayYear = String.valueOf(profile.getInteger("passaway_year"));
+                data.pDetail.passawayReason = profile.getString("passaway_reason");
+            }
+
+            scholarData.add(data);
+        }
+    }
+
+    public synchronized Vector<ScholarData> getScholarData(ScholarData.ScholarType type)
+    {
+        Vector<ScholarData> res = new Vector<>();
+        for (ScholarData data: scholarData)
+            if (data.type == type) res.add(data);
+        return res;
     }
 
     public synchronized Vector<NewsData> searchNewsData(NewsData.NewsType type, String text)
