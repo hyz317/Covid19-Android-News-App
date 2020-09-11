@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/shadow_112749"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/knowledge_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="条目"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="#222222"
+            android:background="#00000000"/>
+
+        <TextView
+            android:id="@+id/knowledge_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:text="标签"
+            android:textStyle="bold"
+            android:textColor="#888888"
+            android:layout_below="@+id/knowledge_name"
+            android:layout_alignStart="@+id/knowledge_name"/>
+
+        <TextView
+            android:id="@+id/knowledge_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="这是一段小编也不知道是什么的介绍，但小编觉得这个条目“好！很有精神！”所以，不要停下来啊。"
+            android:textColor="#888888"
+            android:layout_below="@+id/knowledge_image"
+            android:layout_alignStart="@+id/knowledge_label"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp" />
+
+        <LinearLayout
+            android:id="@+id/fire_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/knowledge_name"
+            android:layout_alignBottom="@+id/knowledge_name">
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/knowledge_image"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_news"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/knowledge_label" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/hide_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+
+        <TextView
+            android:id="@+id/knowledge_relations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="关系"
+            android:textStyle="bold"
+            android:textColor="#888888"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/knowledge_relations_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/down_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#F8F8F8"
+            android:visibility="gone"/>
+
+        <View
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+
+        <TextView
+            android:id="@+id/knowledge_properties"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="属性"
+            android:textStyle="bold"
+            android:textColor="#888888"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/knowledge_properties_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

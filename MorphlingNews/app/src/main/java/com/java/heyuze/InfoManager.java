@@ -270,16 +270,16 @@ public class InfoManager
         return res;
     }
 
-    public Vector<knowledgeData> getKnowledge(String key) throws Exception
+    public Vector<KnowledgeData> getKnowledge(String key) throws Exception
     {
         String jsonString = getJSON("https://innovaapi.aminer.cn/covid/api/v1/pneumonia/entityquery?entity=" + key);
         if (jsonString == null) return null;
         JSONArray knowledgeContents= JSONObject.parseObject(jsonString).getJSONArray("data");
-        Vector<knowledgeData> res = new Vector<>();
+        Vector<KnowledgeData> res = new Vector<>();
         for (int i = 0; i < knowledgeContents.size(); ++i)
         {
             JSONObject knowledgeContent = knowledgeContents.getJSONObject(i);
-            knowledgeData data = new knowledgeData();
+            KnowledgeData data = new KnowledgeData();
             data.hot = knowledgeContent.getDouble("hot");
             data.label = knowledgeContent.getString("label");
             data.url = knowledgeContent.getString("url");
@@ -302,10 +302,10 @@ public class InfoManager
             }
             res.add(data);
         }
-        Collections.sort(res, new Comparator<knowledgeData>()
+        Collections.sort(res, new Comparator<KnowledgeData>()
         {
             @Override
-            public int compare(knowledgeData a, knowledgeData b)
+            public int compare(KnowledgeData a, KnowledgeData b)
             {
                 return b.hot.compareTo(a.hot);
             }

@@ -2,5 +2,6 @@
     <string name="app_name">MorphlingNews</string>
     <string name="title_news">实时新闻</string>
     <string name="title_covid19">疫情数据</string>
+    <string name="title_knowledge">知识图谱</string>
     <string name="title_scholars">知疫学者</string>
 </resources>

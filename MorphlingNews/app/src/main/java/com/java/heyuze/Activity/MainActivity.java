@@ -7,6 +7,7 @@ import android.webkit.HttpAuthHandler;
 import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.java.heyuze.R;
 
 import androidx.annotation.NonNull;
@@ -36,10 +37,12 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_LABELED);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_news, R.id.navigation_covid19, R.id.navigation_scholars)
+                R.id.navigation_news, R.id.navigation_covid19,
+                R.id.navigation_knowledge, R.id.navigation_scholars)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
