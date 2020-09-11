@@ -45,6 +45,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -55,12 +56,16 @@ public class NewsFragment extends Fragment {
     private List<String> lookingCategories;
     private List<String> unlookingCategories;
     private ListView listView;
+    private TextView clusterResult;
     private NewsData.NewsType nowNewsType = NewsData.NewsType.NEWS;
+    private int nowEventsType = -1;
     private RefreshLayout mRefreshLayout;
     private Vector<NewsData> newsData;
+    private Vector<NewsData> eventNewsData;
     private NewsAdapter adapter;
     private int newsCount = 0;
     private static HashSet<String> readTitles = new HashSet<>();
+    private boolean firstLoad = true;
 
     public static boolean hasRead(String str) {
         System.out.println("SETSIZE???????? " + readTitles.size());
@@ -120,6 +125,35 @@ public class NewsFragment extends Fragment {
         }
         newsCount += 6;
         newsCount = Math.min(newsCount, newsData.size());
+        adapter.addData(data);
+    }
+
+    private void updateEventNews(int num) {
+        newsData = InfoManager.getInstance().getNewsData(NewsData.NewsType.EVENT);
+        eventNewsData = new Vector<>();
+        for (NewsData data : newsData) {
+            if (data.eventLabel == num)
+                eventNewsData.add(data);
+        }
+        String result = "聚类第 " + (num + 1) + " 组下共有 " + eventNewsData.size() + " 组新闻\n" + "关键词为" + Arrays.toString(InfoManager.getInstance().getEventKeyword(num + 1));
+        clusterResult.setText(result);
+        Vector<NewsData> data = new Vector<>();
+        for (int i = 0; i < Math.min(6, eventNewsData.size()); i++) {
+            data.add(eventNewsData.get(i));
+        }
+        newsCount = Math.min(6, eventNewsData.size());
+        adapter = new NewsAdapter(getActivity(), data);
+        listView.setAdapter(adapter);
+    }
+
+    private void loadMoreEventNews(int num) {
+        Vector<NewsData> data = new Vector<>();
+        if (newsCount == eventNewsData.size()) return;
+        for (int i = newsCount; i < Math.min(newsCount + 6, eventNewsData.size()); i++) {
+            data.add(eventNewsData.get(i));
+        }
+        newsCount += 6;
+        newsCount = Math.min(newsCount, eventNewsData.size());
         adapter.addData(data);
     }
 
@@ -186,7 +220,7 @@ public class NewsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         newsViewModel =
                 ViewModelProviders.of(this).get(NewsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_news, container, false);
+        final View root = inflater.inflate(R.layout.fragment_news, container, false);
         listView = root.findViewById(R.id.listView);
 
         /*
@@ -209,36 +243,68 @@ public class NewsFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (!InfoManager.getInstance().hasNewsData()) return;
                 String category = (String) tab.getTag();
+                root.findViewById(R.id.tab_event).setVisibility(View.GONE);
+                clusterResult.setVisibility(View.GONE);
                 switch (category) {
                     case "News":
+                        nowEventsType = -1;
                         nowNewsType = NewsData.NewsType.NEWS;
                         updateNews(NewsData.NewsType.NEWS);
                         break;
                     case "Papers":
+                        nowEventsType = -1;
                         nowNewsType = NewsData.NewsType.PAPER;
                         updateNews(NewsData.NewsType.PAPER);
                         break;
                     case "Event":
                         nowNewsType = NewsData.NewsType.EVENT;
+                        root.findViewById(R.id.tab_event).setVisibility(View.VISIBLE);
                         updateNews(NewsData.NewsType.EVENT);
                         break;
                     case "Points":
+                        nowEventsType = -1;
                         nowNewsType = NewsData.NewsType.POINTS;
                         updateNews(NewsData.NewsType.POINTS);
                 }
             }
-
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
+            public void onTabUnselected(TabLayout.Tab tab) {}
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
         updateShowLooking(tabLayout);
+
+        final TabLayout eventTabLayout = root.findViewById(R.id.tab_event);
+        clusterResult = root.findViewById(R.id.event_keywords);
+        eventTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (!InfoManager.getInstance().hasNewsData()) return;
+                Integer category = (Integer) tab.getTag();
+                if (category != -1) {
+                    clusterResult.setVisibility(View.VISIBLE);
+                    updateEventNews(category);
+                }
+                else {
+                    clusterResult.setVisibility(View.GONE);
+                    updateNews(NewsData.NewsType.EVENT);
+                }
+                nowEventsType = category;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+        TabLayout.Tab tab = eventTabLayout.newTab().setText("全部");
+        tab.setTag(-1);
+        eventTabLayout.addTab(tab);
+        for (int i = 1; i <= 6; i++) {
+            TabLayout.Tab tab1 = eventTabLayout.newTab().setText("聚类" + i);
+            tab1.setTag(i - 1);
+            eventTabLayout.addTab(tab1);
+        }
 
         final View dialogView = View.inflate(getActivity(), R.layout.dialog_category, null);
         final GridLayout looking = dialogView.findViewById(R.id.lookingCategoriesLayout);
@@ -303,7 +369,8 @@ public class NewsFragment extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                updateNews(nowNewsType);
+                if (nowEventsType == -1) updateNews(nowNewsType);
+                else updateEventNews(nowEventsType);
                 mHandler.sendMessage(message);
             }
         });
@@ -313,7 +380,8 @@ public class NewsFragment extends Fragment {
                 if (!InfoManager.getInstance().hasNewsData()) return;
                 Message message = new Message();
                 message.what = 2;
-                loadMoreNews();
+                if (nowEventsType == -1) loadMoreNews();
+                else loadMoreEventNews(nowEventsType);
                 System.out.println("load more News finished. " + adapter.getCount());
                 mHandler.sendMessageDelayed(message,1000);
             }
@@ -328,6 +396,8 @@ public class NewsFragment extends Fragment {
                 getActivity().startActivity(intent);
             }
         });
+
+        firstLoad = false;
 
         return root;
     }

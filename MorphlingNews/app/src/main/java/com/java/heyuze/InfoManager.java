@@ -302,7 +302,7 @@ public class InfoManager
     {
         int i = 0;
         Vector<NewsData> res = new Vector<>();
-        String[] labelStrings = Kmeans.getInstance().getKmeansLabel().split(" ");
+        String[] labelStrings = KMeans.getInstance().getKmeansLabel().split(" ");
         for (NewsData entry : newsData)
         {
             if (entry.type == type)

@@ -14,7 +14,7 @@ import java.util.Random;
 // Kmeans聚类算法
 // 调用 public Vector<Vector<EventsVector>> run() 即可
 
-public class Kmeans
+public class KMeans
 {
     private int numOfCluster;// 分成多少簇
     private int timeOfIteration;// 迭代次数
@@ -26,13 +26,13 @@ public class Kmeans
     private Random random;
     // private HashMap<String, WordVector> hashMap = new HashMap<>(); // 关键词到词向量的映射
 
-    private Kmeans() {}
+    private KMeans() {}
 
-    private static Kmeans instance;
+    private static KMeans instance;
 
-    public static Kmeans getInstance()
+    public static KMeans getInstance()
     {
-        if (instance == null) instance = new Kmeans();
+        if (instance == null) instance = new KMeans();
         return instance;
     }
 
