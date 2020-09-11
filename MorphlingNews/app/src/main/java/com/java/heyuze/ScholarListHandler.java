@@ -20,7 +20,7 @@ public class ScholarListHandler implements Runnable {
     public void run() {
         while (true) {
             synchronized (this) {
-                if (!InfoManager.getInstance().hasScholarData()) {
+                if (!InfoManager.getInstance().hasScholarData() || fragment.getActivity() == null) {
                     try {
                         wait(200);
                         System.out.println("scholar loading...");

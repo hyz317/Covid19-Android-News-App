@@ -19,7 +19,7 @@ public class CovidDataHandler implements Runnable {
     public void run() {
         while (true) {
             synchronized (this) {
-                if (!InfoManager.getInstance().hasInfectData()) {
+                if (!InfoManager.getInstance().hasInfectData() || fragment.getActivity() == null) {
                     try {
                         wait(400);
                         System.out.println("covid data loading...");
@@ -32,7 +32,6 @@ public class CovidDataHandler implements Runnable {
             }
         }
         synchronized (InfoManager.getInstance()) {
-            System.out.println(fragment.getActivity());
             fragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

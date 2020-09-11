@@ -27,7 +27,7 @@ public class NewsListHandler implements Runnable {
     public void run() {
         while (true) {
             synchronized (this) {
-                if (!InfoManager.getInstance().hasNewsData()) {
+                if (!InfoManager.getInstance().hasNewsData() || fragment.getActivity() == null) {
                     try {
                         wait(100);
                         System.out.println("news loading...");

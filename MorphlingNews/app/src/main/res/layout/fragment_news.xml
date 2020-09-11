@@ -32,6 +32,27 @@
 
     </FrameLayout>
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tabMode="scrollable"
+        android:visibility="gone">
+    </com.google.android.material.tabs.TabLayout>
+
+    <TextView
+        android:id="@+id/event_keywords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="#555555"
+        android:text="SAMPLETEXT"
+        android:visibility="gone"/>
+
     <Button
         style="@style/Widget.AppCompat.Button.Borderless"
         android:id="@+id/search_bar"
@@ -62,7 +83,6 @@
                 android:id="@+id/listView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
             </ListView>
 
             <View
