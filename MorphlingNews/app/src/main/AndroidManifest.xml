@@ -64,6 +64,13 @@
                 <action android:name="android.intent.action.WXSHARE" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity.KnowledgeActivity"
+            android:label="knowledge">
+            <intent-filter>
+                <action android:name="android.intent.action.KNOWLEDGE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

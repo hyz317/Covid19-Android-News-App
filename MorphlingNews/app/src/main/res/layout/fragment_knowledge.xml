@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
 
     android:background="@color/colorBackground"
-    tools:context=".Activity.SearchActivity">
+    tools:context=".Activity.MainActivity">
 
     <scut.carson_ho.searchview.SearchView
-        android:id="@+id/search_view"
+        android:id="@+id/search_view_knowledge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:textSizeSearch="5dp"
+        app:textSizeSearch="6dp"
+        android:layout_marginBottom="50dp"
         app:textColorSearch="#9b9b9b"
-        app:textHintSearch="输入查询关键字"
+        app:textHintSearch="输入查询的实体"
         app:searchBlockHeight="150"
         app:searchBlockColor="#ffffff"
         />
