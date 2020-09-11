@@ -1,5 +1,6 @@
 package com.java.heyuze.Activity;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -23,6 +24,11 @@ import androidx.navigation.ui.NavigationUI;
 import com.java.heyuze.*;
 import com.tencent.mm.opensdk.openapi.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class MainActivity extends AppCompatActivity
 {
 
@@ -31,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         InfoManager.getInstance();
+
         final String APP_ID = "wxxxxxxx"; //替换为申请到的app id
         IWXAPI wx_api; //全局的微信api对象
         wx_api = WXAPIFactory.createWXAPI(this, APP_ID, true);
@@ -59,8 +66,6 @@ public class MainActivity extends AppCompatActivity
         InitThreadHandler initThreadHandler = new InitThreadHandler(fileDir);
         Thread initThread = new Thread(initThreadHandler);
         initThread.start();
-
-
 
         /*
         try

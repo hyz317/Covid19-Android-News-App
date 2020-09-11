@@ -9,4 +9,5 @@ public class NewsData
     public String id, time, title, lang;
     public NewsType type;
     double value = 0;
+    int eventLabel;
 }
