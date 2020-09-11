@@ -46,6 +46,8 @@ import com.huaban.analysis.jieba.*;
         public Vector<NewsData> getNewsData(NewsData.NewsType type); // 获得加载好的新闻
         public Vector<KnowledgeData> getKnowledge(String key); // 通过HTTP获得某关键词的知识图谱
         public NewsContent getNewsContent(String id); // 通过HTTP获得新闻正文
+        public Vector<EventsVector> getEventsList(); // 通过HTTP获得event列表
+        public String[] getEventKeyword(int i); // 获得分类关键词
 
         public void loadScholarData(); // 加载知疫学者信息（很快，开应用后台秒加载）
         public Vector<ScholarData> getScholarData(ScholarData.ScholarType type); // 获得知疫学者信息
@@ -59,6 +61,7 @@ public class InfoManager
 {
     public enum InfoType
     {INFECTDATA, NEWSDATA, SCHOLARDATA}
+
     public boolean dictNeedUpdate = false;
 
     private static InfoManager instance = null;
@@ -73,7 +76,9 @@ public class InfoManager
     private NewsDictionary newsDict = null;
     JiebaSegmenter segmenter = null;
 
-    private InfoManager() {}
+    private InfoManager()
+    {
+    }
 
     public static InfoManager getInstance()
     {
@@ -81,15 +86,30 @@ public class InfoManager
         return instance;
     }
 
-    public boolean hasInfectData() { return infectData != null; }
+    public boolean hasInfectData()
+    {
+        return infectData != null;
+    }
 
-    public boolean hasNewsData() { return newsData != null; }
+    public boolean hasNewsData()
+    {
+        return newsData != null;
+    }
 
-    public boolean hasScholarData() { return scholarData != null;}
+    public boolean hasScholarData()
+    {
+        return scholarData != null;
+    }
 
-    public boolean isReadyForSearch() { return newsDict != null; }
+    public boolean isReadyForSearch()
+    {
+        return newsDict != null;
+    }
 
-    public void loadJieba() { segmenter = new JiebaSegmenter(); }
+    public void loadJieba()
+    {
+        segmenter = new JiebaSegmenter();
+    }
 
     public void loadJSON(InfoType type, String path) throws Exception
     {
@@ -116,7 +136,7 @@ public class InfoManager
                 infectJSON = JSON.parseObject(stringBuffer.toString());
                 break;
             case NEWSDATA:
-                newsJSON  = JSON.parseObject(stringBuffer.toString());
+                newsJSON = JSON.parseObject(stringBuffer.toString());
                 break;
             default:
         }
@@ -163,7 +183,7 @@ public class InfoManager
     public void loadDictionary()
     {
         NewsDictionary resDict = new NewsDictionary();
-        for (NewsData data: newsData)
+        for (NewsData data : newsData)
             resDict.addTitle(data.title, data, segmenter);
         resDict.setNewsNum(newsData.size());
         synchronized (this)
@@ -171,7 +191,7 @@ public class InfoManager
             newsDict = resDict;
         }
     }
-  
+
     private void loadData(InfoType type)
     {
         switch (type)
@@ -221,9 +241,9 @@ public class InfoManager
                         data.type = NewsData.NewsType.PAPER;
                     else if (content.getString("type").equals("news"))
                         data.type = NewsData.NewsType.NEWS;
-                    else if (content.getString("type").equals("points"))
-                        data.type = NewsData.NewsType.POINTS;
-                    else data.type = NewsData.NewsType.EVENT;
+                    else if (content.getString("type").equals("event"))
+                        data.type = NewsData.NewsType.EVENT;
+                    else data.type = NewsData.NewsType.POINTS;
                     data.id = content.getString("_id");
                     data.time = content.getString("time");
                     data.title = content.getString("title");
@@ -234,6 +254,7 @@ public class InfoManager
                     @Override
                     public int compare(NewsData a, NewsData b)
                     {
+                        if (b.time.equals(a.time)) return b.id.compareTo(a.id);
                         return b.time.compareTo(a.time);
                     }
                 });
@@ -279,9 +300,19 @@ public class InfoManager
 
     public synchronized Vector<NewsData> getNewsData(NewsData.NewsType type)
     {
+        int i = 0;
         Vector<NewsData> res = new Vector<>();
-        for (NewsData entry: newsData)
-            if (entry.type == type) res.add(entry);
+        String[] labelStrings = Kmeans.getInstance().getKmeansLabel().split(" ");
+        for (NewsData entry : newsData)
+        {
+            if (entry.type == type)
+            {
+                if (type == NewsData.NewsType.EVENT)
+                    entry.eventLabel = Integer.parseInt(labelStrings[i]);
+                res.add(entry);
+                i++;
+            }
+        }
         return res;
     }
 
@@ -289,7 +320,7 @@ public class InfoManager
     {
         String jsonString = getJSON("https://innovaapi.aminer.cn/covid/api/v1/pneumonia/entityquery?entity=" + key);
         if (jsonString == null) return null;
-        JSONArray knowledgeContents= JSONObject.parseObject(jsonString).getJSONArray("data");
+        JSONArray knowledgeContents = JSONObject.parseObject(jsonString).getJSONArray("data");
         Vector<KnowledgeData> res = new Vector<>();
         for (int i = 0; i < knowledgeContents.size(); ++i)
         {
@@ -300,8 +331,10 @@ public class InfoManager
             data.url = knowledgeContent.getString("url");
             data.imgUrl = knowledgeContent.getString("img");
             JSONObject abstractInfo = knowledgeContent.getJSONObject("abstractInfo");
-            if (!abstractInfo.getString("enwiki").equals("")) data.description = abstractInfo.getString("enwiki");
-            else if (!abstractInfo.getString("baidu").equals("")) data.description = abstractInfo.getString("baidu");
+            if (!abstractInfo.getString("enwiki").equals(""))
+                data.description = abstractInfo.getString("enwiki");
+            else if (!abstractInfo.getString("baidu").equals(""))
+                data.description = abstractInfo.getString("baidu");
             else data.description = abstractInfo.getString("zhwiki");
             JSONObject properties = abstractInfo.getJSONObject("COVID").getJSONObject("properties");
             for (String propertyName : properties.keySet())
@@ -343,6 +376,85 @@ public class InfoManager
         for (int i = 0; i < labels.size(); ++i)
             data.labels.add(labels.getJSONObject(i).getString("label"));
         return data;
+    }
+
+    public synchronized Vector<EventsVector> getEventsList() throws Exception
+    {
+        String jsonString = getJSON("https://covid-dashboard.aminer.cn/api/events/list?type=event&page=1&size=1000");
+        if (jsonString == null) return null;
+        Vector<EventsVector> res = new Vector<>();
+        HashSet<String> wordSet = new HashSet<>();
+        HashMap<String, Integer> wordCount = new HashMap<>();
+        JSONArray eventList = JSONObject.parseObject(jsonString).getJSONArray("data");
+        for (int i = 0; i < eventList.size(); ++i)
+        {
+            JSONObject eventData = eventList.getJSONObject(i);
+            String[] words = eventData.getString("seg_text").split(" ");
+            HashSet<String> temp = new HashSet<>();
+            for (String word : words)
+                if (word.length() > 1) temp.add(word);
+            wordSet.addAll(temp);
+            for (String word : temp)
+            {
+                if (wordCount.get(word) == null) wordCount.put(word, 1);
+                else wordCount.put(word, wordCount.get(word) + 1);
+            }
+        }
+
+        Vector<String> wordList = new Vector<>(wordSet);
+        System.out.println(wordList.size());
+        for (String word: wordList)
+            System.out.println(word + " ");
+        for (int i = 0; i < eventList.size(); ++i)
+        {
+            EventsVector data = new EventsVector();
+            NewsData news = new NewsData();
+            JSONObject eventData = eventList.getJSONObject(i);
+            news.id = eventData.getString("_id");
+            news.time = eventData.getString("time");
+            news.title = eventData.getString("title");
+            news.type = NewsData.NewsType.EVENT;
+
+            data.news = news;
+            data.weight = new Vector<>();
+
+            for (String word: wordList)
+            {
+                int tf = 0;
+                String[] segText = eventData.getString("seg_text").split(" ");
+                for (String text: segText)
+                    if (text.equals(word)) tf++;
+                if (tf == 0) data.weight.add(0.0);
+                else
+                {
+                    double idf = Math.log(eventList.size() / (double) (wordCount.get(word) + 1));
+                    data.weight.add(tf * idf);
+                }
+            }
+            res.add(data);
+        }
+        System.out.println("OK2");
+        return res;
+    }
+
+    public String[] getEventKeyword(int i)
+    {
+        String[] res0 = {"卫生", "公共", "工程院", "研究"};
+        String[] res1 = {"SARS-CoV-2", "病毒", "细胞", "感染"};
+        String[] res2 = {"临床", "试验", "疫苗", "制药"};
+        String[] res3 = {"冠状病毒", "蛋白", "蝙蝠", "穿山甲"};
+        String[] res4 = {"大学", "研究人员", "新冠", "检测"};
+        String[] res5 = {"COVID-19", "患者", "重症", "肺炎"};
+        switch (i)
+        {
+            case 1: return res0;
+            case 2: return res1;
+            case 3: return res2;
+            case 4: return res3;
+            case 5: return res4;
+            case 6: return res5;
+        }
+        return res0;
     }
 
     public synchronized void loadScholarData() throws Exception

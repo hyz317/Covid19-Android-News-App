@@ -29,6 +29,7 @@ public class InitThreadHandler implements Runnable
                 instance.loadJSON(InfoManager.InfoType.NEWSDATA, fileDir + "news_data.json");
                 instance.loadJSON(InfoManager.InfoType.INFECTDATA, fileDir + "infect_data.json");
                 instance.loadScholarData();
+                Vector<NewsData> eventList = instance.getNewsData(NewsData.NewsType.EVENT);
 
                 /*
                 Vector<ScholarData> test1 = instance.getScholarData(ScholarData.ScholarType.HIGHATTENTION);
