@@ -120,11 +120,14 @@ public class ScholarsAdapter extends BaseAdapter {
         pack.contact.setText(contactStr);
 
         if (data.type == ScholarData.ScholarType.PASSAWAY) {
-            String passStr = data.pDetail.passawayYear + " 年 " + data.pDetail.passawayMonth + " 月 " + data.pDetail.passawayDay + " 日";
+            String passStr = data.pDetail.passawayYear + "年" + data.pDetail.passawayMonth + "月" + data.pDetail.passawayDay + "日";
             if (data.pDetail.passawayYear.equals("null")) passStr = "暂时未知";
             pack.dead.setText(passStr);
             pack.dead.setVisibility(View.VISIBLE);
             pack.deadIcon.setVisibility(View.VISIBLE);
+        } else {
+            pack.dead.setVisibility(View.GONE);
+            pack.deadIcon.setVisibility(View.GONE);
         }
 
         pack.totalLayout.setOnClickListener(new View.OnClickListener() {
