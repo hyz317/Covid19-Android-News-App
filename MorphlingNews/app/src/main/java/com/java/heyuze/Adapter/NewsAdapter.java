@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.java.heyuze.NewsData;
 import com.java.heyuze.R;
+import com.java.heyuze.ui.news.NewsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +31,11 @@ public class NewsAdapter extends BaseAdapter {
     private class NewsViewPack {
         private TextView tvTitle;
         private TextView tvDate;
-        private TextView tvContent;
         private TextView tvCategory;
 
         public NewsViewPack(View view) {
             tvTitle = (TextView) view.findViewById(R.id.tv_title);
             tvDate = (TextView) view.findViewById(R.id.tv_date);
-            tvContent = (TextView) view.findViewById(R.id.tv_content);
             tvCategory = (TextView) view.findViewById(R.id.tv_category);
         }
 
@@ -68,11 +67,14 @@ public class NewsAdapter extends BaseAdapter {
     }
 
     private void initView(NewsData data, NewsViewPack pack) {
-        String content_tmp = "Possibly existing content";
         pack.tvCategory.setText(data.type.toString());
         pack.tvDate.setText(data.time);
         pack.tvTitle.setText(data.title);
-        pack.tvContent.setText(content_tmp);
+        if (NewsFragment.hasRead(data.title + data.time)) {
+            pack.tvTitle.setTextColor(context.getResources().getColor(R.color.lightgrey));
+        } else {
+            pack.tvTitle.setTextColor(context.getResources().getColor(R.color.moredarkgrey));
+        }
     }
 
     public void addData(Vector<NewsData> data) {

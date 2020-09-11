@@ -22,7 +22,7 @@ public class CovidDataHandler implements Runnable {
                 if (!InfoManager.getInstance().hasInfectData()) {
                     try {
                         wait(400);
-                        System.out.println("loading...");
+                        System.out.println("covid data loading...");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

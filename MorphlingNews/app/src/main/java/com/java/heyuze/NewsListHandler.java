@@ -30,7 +30,7 @@ public class NewsListHandler implements Runnable {
                 if (!InfoManager.getInstance().hasNewsData()) {
                     try {
                         wait(100);
-                        System.out.println("loading...");
+                        System.out.println("news loading...");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
