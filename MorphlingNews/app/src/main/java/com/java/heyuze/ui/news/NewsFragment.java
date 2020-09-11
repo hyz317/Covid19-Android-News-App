@@ -222,7 +222,7 @@ public class NewsFragment extends Fragment {
                 ViewModelProviders.of(this).get(NewsViewModel.class);
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
         listView = root.findViewById(R.id.listView);
-
+        clusterResult = root.findViewById(R.id.event_keywords);
         /*
         final TextView textView = root.findViewById(R.id.text_home);
         newsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -275,7 +275,6 @@ public class NewsFragment extends Fragment {
         updateShowLooking(tabLayout);
 
         final TabLayout eventTabLayout = root.findViewById(R.id.tab_event);
-        clusterResult = root.findViewById(R.id.event_keywords);
         eventTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
