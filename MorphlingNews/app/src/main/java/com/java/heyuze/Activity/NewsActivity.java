@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.java.heyuze.R;
 
+import org.w3c.dom.Text;
+
 public class NewsActivity extends AppCompatActivity {
 
     @Override
@@ -23,16 +25,19 @@ public class NewsActivity extends AppCompatActivity {
         TextView tvTitle = this.findViewById(R.id.tv_title);
         TextView tvDate = this.findViewById(R.id.tv_date);
         TextView tvContent = this.findViewById(R.id.tv_content);
+        TextView tvSource = this.findViewById(R.id.tv_origin);
         ImageButton wxButton = this.findViewById(R.id.wx_button);
 
         Intent intent = this.getIntent();
         final String title = intent.getStringExtra("title");
         String date = intent.getStringExtra("date");
         final String content = intent.getStringExtra("content");
+        final String source = intent.getStringExtra("source");
 
         tvTitle.setText(title);
         tvDate.setText(date);
         tvContent.setText(content);
+        tvSource.setText(source);
 
         wxButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/shadow_171339"
+    android:id="@+id/scholar_total_layout"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/scholar_image"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="10dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/zhongnanshan" />
+
+        <TextView
+            android:id="@+id/scholar_name"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textSize="25sp"
+            android:text="姓名"
+            android:gravity="left"
+            android:textStyle="bold"
+            android:textColor="#222222"
+            android:background="#00000000"
+            android:ellipsize="end"
+            android:lines="1"
+            android:layout_toRightOf="@id/scholar_image"
+            android:layout_alignTop="@id/scholar_image"/>
+
+        <ImageView
+            android:id="@+id/scholar_position_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_education"
+            android:layout_below="@id/scholar_name"
+            android:layout_alignLeft="@+id/scholar_name"/>
+
+
+        <TextView
+            android:id="@+id/scholar_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/scholar_position_icon"
+            android:layout_alignBottom="@id/scholar_position_icon"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="SAMPLE position"/>
+
+        <ImageView
+            android:id="@+id/scholar_affiliation_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_affiliation"
+            android:layout_below="@id/scholar_position_icon"
+            android:layout_alignLeft="@+id/scholar_name"/>
+
+
+        <TextView
+            android:id="@+id/scholar_affiliation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/scholar_affiliation_icon"
+            android:layout_alignBottom="@id/scholar_affiliation_icon"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="SAMPLE AFFILIATION"/>
+
+        <TextView
+            android:id="@+id/scholar_achievement_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="学术成就"
+            android:background="@drawable/shape_corner3"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/scholar_affiliation_icon"
+            android:layout_alignLeft="@id/scholar_name"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:padding="4dp"
+            android:shadowRadius="2"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowColor="#ff000000"/>
+
+        <TextView
+            android:id="@+id/scholar_achievement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="114"
+            android:textStyle="bold"
+            android:layout_toRightOf="@id/scholar_achievement_icon"
+            android:layout_alignBottom="@id/scholar_achievement_icon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="3dp"/>
+
+        <TextView
+            android:id="@+id/scholar_paper_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="论文数"
+            android:background="@drawable/shape_corner4"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/scholar_affiliation_icon"
+            android:layout_toRightOf="@id/scholar_achievement"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="12sp"
+            android:padding="4dp"
+            android:shadowRadius="2"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowColor="#ff000000"/>
+
+        <TextView
+            android:id="@+id/scholar_paper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="514"
+            android:textStyle="bold"
+            android:layout_toRightOf="@id/scholar_paper_icon"
+            android:layout_alignBottom="@id/scholar_paper_icon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="3dp"/>
+
+        <TextView
+            android:id="@+id/scholar_dead_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="逝世日期"
+            android:background="@drawable/shape_corner"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/scholar_achievement_icon"
+            android:layout_alignLeft="@id/scholar_achievement_icon"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:padding="4dp"
+            android:shadowRadius="2"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowColor="#ff000000"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/scholar_dead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1919810"
+            android:textStyle="bold"
+            android:layout_toRightOf="@id/scholar_dead_icon"
+            android:layout_alignBottom="@id/scholar_dead_icon"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="3dp"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/hide_scholar_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="简介"
+            android:textStyle="bold"
+            android:textColor="#444444"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/scholar_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试"/>
+
+        <View
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="工作经历"
+            android:textStyle="bold"
+            android:textColor="#444444"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/scholar_work"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试"/>
+
+        <View
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="联系方式"
+            android:textStyle="bold"
+            android:textColor="#444444"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/scholar_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试"/>
+
+    </LinearLayout>
+
+</LinearLayout>

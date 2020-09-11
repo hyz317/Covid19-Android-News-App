@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.java.heyuze.Adapter.NewsAdapter;
 import com.java.heyuze.InfoManager;
+import com.java.heyuze.NewsContent;
 import com.java.heyuze.NewsData;
 import com.java.heyuze.R;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -78,6 +81,23 @@ public class SearchContentActivity extends AppCompatActivity {
         newsCount = Math.min(6, newsData.size());
         adapter = new NewsAdapter(this, data);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                Intent intent = new Intent(SearchContentActivity.this, NewsActivity.class);
+                try {
+                    NewsContent ctn = InfoManager.getInstance().getNewsContent(data.get(position).id);
+                    intent.putExtra("title", data.get(position).title);
+                    intent.putExtra("date", data.get(position).time);
+                    intent.putExtra("content", ctn.content);
+                    intent.putExtra("source", ctn.source);
+                } catch (Exception e) {
+                    System.out.println("EXCEPTION GET NEWS CONTENT?");
+                }
+                SearchContentActivity.this.startActivity(intent);
+            }
+        });
 
         mRefreshLayout = findViewById(R.id.refreshLayout);
         mRefreshLayout.setEnableRefresh(false);

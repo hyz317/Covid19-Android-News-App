@@ -65,16 +65,16 @@ public class CovidInfoActivity extends AppCompatActivity {
             mAxisValues.add(new AxisValue(i).setLabel(strDate));
             // System.out.println(strDate);
         }
-        Line line_1 = new Line(values_1).setColor(Color.RED).setCubic(true);
-        Line line_2 = new Line(values_2).setColor(Color.GREEN).setCubic(true);
-        Line line_3 = new Line(values_3).setColor(Color.BLACK).setCubic(true);
+        Line line_1 = new Line(values_1).setColor(Color.argb(200, 252, 175, 139)).setCubic(true);
+        Line line_2 = new Line(values_2).setColor(Color.argb(200, 174, 243, 148)).setCubic(true);
+        Line line_3 = new Line(values_3).setColor(Color.argb(200, 125, 125, 125)).setCubic(true);
         List<Line> lines = new ArrayList<Line>();
         lines.add(line_1);
         lines.add(line_2);
         lines.add(line_3);
-        line_1.setPointRadius(2);
-        line_2.setPointRadius(2);
-        line_3.setPointRadius(2);
+        line_1.setPointRadius(1);
+        line_2.setPointRadius(1);
+        line_3.setPointRadius(1);
         LineChartData data = new LineChartData(lines);
         // 坐标轴
         Axis axisX = new Axis(); // X轴

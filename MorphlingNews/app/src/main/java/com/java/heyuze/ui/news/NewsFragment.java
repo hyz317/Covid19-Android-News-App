@@ -45,6 +45,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -59,6 +60,12 @@ public class NewsFragment extends Fragment {
     private Vector<NewsData> newsData;
     private NewsAdapter adapter;
     private int newsCount = 0;
+    private static HashSet<String> readTitles = new HashSet<>();
+
+    public static boolean hasRead(String str) {
+        System.out.println("SETSIZE???????? " + readTitles.size());
+        return readTitles.contains(str);
+    }
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -94,6 +101,9 @@ public class NewsFragment extends Fragment {
                     intent.putExtra("title", data.get(position).title);
                     intent.putExtra("date", data.get(position).time);
                     intent.putExtra("content", ctn.content);
+                    intent.putExtra("source", ctn.source);
+                    readTitles.add(data.get(position).title + data.get(position).time);
+                    adapter.notifyDataSetChanged();
                 } catch (Exception e) {
                     System.out.println("EXCEPTION GET NEWS CONTENT?");
                 }
@@ -190,7 +200,7 @@ public class NewsFragment extends Fragment {
         */
 
         lookingCategories = new ArrayList<String>() {{ add("News"); add("Papers");
-                                                       add("Event"); }};
+                                                       add("Event"); add("Points"); }};
         unlookingCategories = new ArrayList<String>()  {{ /*add("+xllend3"); add("+royxroc");
                                                           add("+pchxiao"); add("+hyz317");*/ }};
         final TabLayout tabLayout = root.findViewById(R.id.tab);
@@ -212,6 +222,9 @@ public class NewsFragment extends Fragment {
                         nowNewsType = NewsData.NewsType.EVENT;
                         updateNews(NewsData.NewsType.EVENT);
                         break;
+                    case "Points":
+                        nowNewsType = NewsData.NewsType.POINTS;
+                        updateNews(NewsData.NewsType.POINTS);
                 }
             }
 

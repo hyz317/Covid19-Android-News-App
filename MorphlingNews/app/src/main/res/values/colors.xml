@@ -7,4 +7,5 @@
     <color name="darkgrey">#555555</color>
     <color name="transparent">#00000000</color>
     <color name="moredarkgrey">#444444</color>
+    <color name="lightgrey">#AAAAAA</color>
 </resources>

@@ -8,40 +8,64 @@
     <TextView
         android:id="@+id/tv_title"
         android:text="TESTTITLE"
+        android:padding="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textColor="@color/black"
+        android:maxLines="5"
+        android:ellipsize="end"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:text="TESTDATE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:singleLine="true"/>
+        <TextView
+            android:id="@+id/tv_origin"
+            android:text="来源"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="14dp"/>
+
+    </LinearLayout>
+    <View
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_gravity="center_vertical"
-        android:singleLine="true"/>
-    <TextView
-        android:id="@+id/tv_date"
-        android:text="TESTDATE"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:singleLine="true"/>
-    <View
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#000"/>
+        android:background="@color/darkgrey"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="TESTCONTENT"
-            android:id="@+id/tv_content"
-            android:layout_marginTop="10dp"
-            android:textSize="16sp"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:fillViewport="true"
+            android:padding="25dp">
+
+            <TextView
+                android:text="TESTCONTENT\nTEST"
+                android:id="@+id/tv_content"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/moredarkgrey"
+                android:lineSpacingExtra="6dp"
+                />
+
+        </ScrollView>
 
         <ImageButton
             android:id="@+id/wx_button"
