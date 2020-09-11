@@ -200,7 +200,7 @@ public class NewsFragment extends Fragment {
         */
 
         lookingCategories = new ArrayList<String>() {{ add("News"); add("Papers");
-                                                       add("Event"); }};
+                                                       add("Event"); add("Points"); }};
         unlookingCategories = new ArrayList<String>()  {{ /*add("+xllend3"); add("+royxroc");
                                                           add("+pchxiao"); add("+hyz317");*/ }};
         final TabLayout tabLayout = root.findViewById(R.id.tab);
@@ -222,6 +222,9 @@ public class NewsFragment extends Fragment {
                         nowNewsType = NewsData.NewsType.EVENT;
                         updateNews(NewsData.NewsType.EVENT);
                         break;
+                    case "Points":
+                        nowNewsType = NewsData.NewsType.POINTS;
+                        updateNews(NewsData.NewsType.POINTS);
                 }
             }
 

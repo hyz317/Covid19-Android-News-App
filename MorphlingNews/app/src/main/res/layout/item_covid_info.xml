@@ -53,7 +53,7 @@
         android:id="@+id/tv_covid_dead"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.8"
+        android:layout_weight="1.2"
         android:text="死亡"
         android:padding="5dp"
         android:ellipsize="end"
